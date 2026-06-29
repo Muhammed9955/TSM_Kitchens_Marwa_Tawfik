@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.png",
   },
 };
 
@@ -34,7 +34,7 @@ export default function ArabicLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} h-full antialiased scroll-smooth`}>
-      <body className="min-h-full flex flex-col font-cairo bg-zinc-950 text-zinc-100 selection:bg-pink-600 selection:text-white">
+      <body className="min-h-full flex flex-col font-cairo bg-white text-slate-900 selection:bg-pink-600 selection:text-white">
         {children}
       </body>
     </html>

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.png",
   },
 };
 
@@ -34,7 +34,7 @@ export default function EnglishLayout({
 }>) {
   return (
     <html lang="en" dir="ltr" className={`${inter.variable} h-full antialiased scroll-smooth`}>
-      <body className="min-h-full flex flex-col font-sans bg-zinc-950 text-zinc-100 selection:bg-pink-600 selection:text-white">
+      <body className="min-h-full flex flex-col font-sans bg-white text-slate-900 selection:bg-pink-600 selection:text-white">
         {children}
       </body>
     </html>
