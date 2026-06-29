@@ -110,15 +110,15 @@ export default function GalleryPreview({ lang }: GalleryPreviewProps) {
         <div className="relative px-2 sm:px-8 mb-12">
           {/* Navigation Arrow Left */}
           <button
-            onClick={lang === "ar" ? nextSlide : prevSlide}
+            onClick={prevSlide}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white hover:bg-pink-600 text-slate-700 hover:text-white border border-slate-200 p-2 sm:p-2.5 rounded-full shadow-md transition-all cursor-pointer"
             aria-label="Previous Slide"
           >
             <ChevronLeft size={20} />
           </button>
 
-          {/* Carousel Viewport */}
-          <div className="overflow-hidden">
+          {/* Carousel Viewport (forced LTR for stable slide offsets) */}
+          <div className="overflow-hidden" dir="ltr">
             <div
               className="flex transition-transform duration-500 ease-in-out gap-6"
               style={{
@@ -138,6 +138,7 @@ export default function GalleryPreview({ lang }: GalleryPreviewProps) {
                     style={{
                       width: `calc(${100 / slidesToShow}% - ${(slidesToShow - 1) * 24 / slidesToShow}px)`,
                     }}
+                    dir={lang === "ar" ? "rtl" : "ltr"}
                   >
                     {/* Slide Image */}
                     <div className="relative w-full h-full">
@@ -177,7 +178,7 @@ export default function GalleryPreview({ lang }: GalleryPreviewProps) {
 
           {/* Navigation Arrow Right */}
           <button
-            onClick={lang === "ar" ? prevSlide : nextSlide}
+            onClick={nextSlide}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white hover:bg-pink-600 text-slate-700 hover:text-white border border-slate-200 p-2 sm:p-2.5 rounded-full shadow-md transition-all cursor-pointer"
             aria-label="Next Slide"
           >
