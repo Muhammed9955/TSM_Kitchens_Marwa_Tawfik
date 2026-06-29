@@ -62,6 +62,7 @@ export default function Navbar({ lang }: NavbarProps) {
     { href: `${basePath}/`, label: dict.nav.home },
     { href: `${basePath}/#about`, label: dict.nav.about },
     { href: `${basePath}/#services`, label: dict.nav.services },
+    { href: `${basePath}/projects`, label: dict.nav.projects },
     { href: `${basePath}/gallery`, label: dict.nav.gallery },
     { href: `${basePath}/#contact`, label: dict.nav.contact },
   ];

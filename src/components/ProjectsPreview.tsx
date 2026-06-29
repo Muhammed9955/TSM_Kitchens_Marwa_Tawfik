@@ -27,7 +27,7 @@ const projectsPreviewData: ProjectPreviewItem[] = [
     titleEn: "Modern Acrylic Kitchen - Smouha",
     descAr: "مساحة واسعة بنظام الإضاءة الذكية ومزيج من خامات الأكريليك الفاخر والبولي لاك المقاوم للرطوبة.",
     descEn: "Spacious contemporary layout featuring smart LED profiles, high-gloss Acrylic, and moisture-resistant Poly-lac.",
-    image: "/images/627444162_1494778629321899_6247081398093507899_n.jpg",
+    image: "/images/619683564_1488417939957968_8517148991043508014_n.jpg",
     locationAr: "سموحة، الإسكندرية",
     locationEn: "Smouha, Alexandria"
   },
@@ -37,7 +37,7 @@ const projectsPreviewData: ProjectPreviewItem[] = [
     titleEn: "Luxury Natural Wood Kitchen - Kafr Abdo",
     descAr: "مطبخ دافئ وعريق مصنوع بالكامل من خشب الأرو الطبيعي المعالج ضد المياه، مع مقابض نحاسية عتيقة.",
     descEn: "Warm classical design crafted entirely of premium water-treated natural oak wood with vintage brass hardware.",
-    image: "/images/648466344_1523994953066933_1065404319821191504_n.jpg",
+    image: "/images/showroom.jpg",
     locationAr: "كفر عبده، الإسكندرية",
     locationEn: "Kafr Abdo, Alexandria"
   },
