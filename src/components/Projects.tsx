@@ -31,13 +31,13 @@ interface ProjectItem {
 const projectsData: ProjectItem[] = [
   {
     id: 1,
-    titleAr: "مطبخ أكريليك عصري - الشيخ زايد",
-    titleEn: "Modern Acrylic Kitchen - Sheikh Zayed",
+    titleAr: "مطبخ أكريليك عصري - سموحة",
+    titleEn: "Modern Acrylic Kitchen - Smouha",
     descAr: "مساحة واسعة بنظام الإضاءة الذكية ومزيج من خامات الأكريليك الفاخر والبولي لاك المقاوم للرطوبة مع جزيرة مطبخ وسطية رخام.",
     descEn: "Spacious contemporary layout featuring smart LED profiles, high-gloss Acrylic cabinetry, and moisture-resistant Poly-lac with a marble island.",
     image: "/images/627444162_1494778629321899_6247081398093507899_n.jpg",
-    locationAr: "الشيخ زايد، الجيزة",
-    locationEn: "Sheikh Zayed, Giza",
+    locationAr: "سموحة، الإسكندرية",
+    locationEn: "Smouha, Alexandria",
     year: "2026",
     materialsAr: "أكريليك تركي، بولي لاك، كوارتز، إكسسوارات بلوم نمساوية",
     materialsEn: "Turkish Acrylic, Poly-lac, Quartz countertop, Austrian Blum fittings",
@@ -50,13 +50,13 @@ const projectsData: ProjectItem[] = [
   },
   {
     id: 2,
-    titleAr: "مطبخ كلاسيك خشب - التجمع الخامس",
-    titleEn: "Luxury Natural Wood Kitchen - New Cairo",
+    titleAr: "مطبخ كلاسيك خشب - كفر عبده",
+    titleEn: "Luxury Natural Wood Kitchen - Kafr Abdo",
     descAr: "مطبخ دافئ وعريق مصنوع بالكامل من خشب الأرو الطبيعي المعالج ضد المياه، مع مقابض نحاسية عتيقة ومساحة تخزين مصممة خصيصاً.",
     descEn: "Warm classical design crafted entirely of premium water-treated natural oak wood, featuring vintage brass hardware and custom storage units.",
     image: "/images/648466344_1523994953066933_1065404319821191504_n.jpg",
-    locationAr: "التجمع الخامس، القاهرة الجديدة",
-    locationEn: "Fifth Settlement, New Cairo",
+    locationAr: "كفر عبده، الإسكندرية",
+    locationEn: "Kafr Abdo, Alexandria",
     year: "2025",
     materialsAr: "خشب أرو طبيعي، إكسسوارات هيدروليك إيطالية، جرانيت مستورد",
     materialsEn: "Natural Oak Wood, Italian soft-close hardware, imported Granite tops",
@@ -69,13 +69,13 @@ const projectsData: ProjectItem[] = [
   },
   {
     id: 3,
-    titleAr: "دريسنج روم متكامل - مصر الجديدة",
-    titleEn: "Bespoke Dressing Room - Heliopolis",
+    titleAr: "دريسنج روم متكامل - سان ستيفانو",
+    titleEn: "Bespoke Dressing Room - San Stefano",
     descAr: "استغلال ذكي للغاية للمساحات المتاحة مع تقسيمات داخلية مريحة لتنظيم الملابس، أرفف زجاجية مضيئة، ودرف ألومنيوم سوداء زجاج.",
     descEn: "Highly optimized walk-in closet space featuring customized drawer grids, integrated LED profiles, and premium black aluminum glass doors.",
     image: "/images/711846958_1607152504751177_8435629229339703644_n.jpg",
-    locationAr: "مصر الجديدة، القاهرة",
-    locationEn: "Heliopolis, Cairo",
+    locationAr: "سان ستيفانو، الإسكندرية",
+    locationEn: "San Stefano, Alexandria",
     year: "2026",
     materialsAr: "ألواح خشبية معالجة، درف زجاج سيكوريت، إضاءة ليد بروفايل",
     materialsEn: "Moisture-treated panels, tempered glass doors, profile LED setup",
@@ -117,7 +117,7 @@ export default function Projects({ lang }: ProjectsProps) {
             >
               <div>
                 {/* Image Container with floating tags */}
-                <div className="relative aspect-video w-full overflow-hidden border-b border-slate-100">
+                <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-slate-100">
                   <Image
                     src={project.image}
                     alt={lang === "ar" ? project.titleAr : project.titleEn}
