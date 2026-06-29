@@ -54,7 +54,7 @@ const projectsData: ProjectItem[] = [
     titleEn: "Luxury Natural Wood Kitchen - Kafr Abdo",
     descAr: "مطبخ دافئ وعريق مصنوع بالكامل من خشب الأرو الطبيعي المعالج ضد المياه، مع مقابض نحاسية عتيقة ومساحة تخزين مصممة خصيصاً.",
     descEn: "Warm classical design crafted entirely of premium water-treated natural oak wood, featuring vintage brass hardware and custom storage units.",
-    image: "/images/showroom.jpg",
+    image: "/images/627781586_1494778699321892_3431980651333181156_n.jpg",
     locationAr: "كفر عبده، الإسكندرية",
     locationEn: "Kafr Abdo, Alexandria",
     year: "2025",
@@ -124,7 +124,8 @@ export default function Projects({ lang }: ProjectsProps) {
             return (
               <div
                 key={project.id}
-                className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-center"
+                id={`project-${project.id}`}
+                className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-center scroll-mt-28"
               >
                 {/* Image half (reordered dynamically on desktop) */}
                 <div className={`w-full lg:w-1/2 ${isEven ? "lg:order-1" : "lg:order-2"}`}>

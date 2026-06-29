@@ -37,7 +37,7 @@ const projectsPreviewData: ProjectPreviewItem[] = [
     titleEn: "Luxury Natural Wood Kitchen - Kafr Abdo",
     descAr: "مطبخ دافئ وعريق مصنوع بالكامل من خشب الأرو الطبيعي المعالج ضد المياه، مع مقابض نحاسية عتيقة.",
     descEn: "Warm classical design crafted entirely of premium water-treated natural oak wood with vintage brass hardware.",
-    image: "/images/showroom.jpg",
+    image: "/images/627781586_1494778699321892_3431980651333181156_n.jpg",
     locationAr: "كفر عبده، الإسكندرية",
     locationEn: "Kafr Abdo, Alexandria"
   },
@@ -114,7 +114,7 @@ export default function ProjectsPreview({ lang }: ProjectsPreviewProps) {
               {/* View details page trigger CTA */}
               <div className="p-6 pt-0 mt-auto">
                 <Link
-                  href={targetLink}
+                  href={`${targetLink}#project-${project.id}`}
                   className="w-full inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-pink-600 text-slate-700 hover:text-white font-bold py-3 rounded-xl border border-slate-200/50 hover:border-pink-500 transition-all duration-300 text-xs sm:text-sm cursor-pointer"
                 >
                   <span>{lang === "ar" ? "عرض التفاصيل والمواصفات" : "View Details & Specs"}</span>
