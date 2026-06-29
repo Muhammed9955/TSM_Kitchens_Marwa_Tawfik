@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
 import About from "@/components/About";
 import Services from "@/components/Services";
-import Projects from "@/components/Projects";
+import ProjectsPreview from "@/components/ProjectsPreview";
 import GalleryPreview from "@/components/GalleryPreview";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
@@ -16,7 +16,7 @@ export default function EnglishHome() {
         <HeroSlider lang="en" />
         <About lang="en" />
         <Services lang="en" />
-        <Projects lang="en" />
+        <ProjectsPreview lang="en" />
         <GalleryPreview lang="en" />
         <Contact lang="en" />
       </main>
