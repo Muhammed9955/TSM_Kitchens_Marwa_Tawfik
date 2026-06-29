@@ -73,7 +73,7 @@ const projectsData: ProjectItem[] = [
     titleEn: "Bespoke Dressing Room - San Stefano",
     descAr: "استغلال ذكي للغاية للمساحات المتاحة مع تقسيمات داخلية مريحة لتنظيم الملابس، أرفف زجاجية مضيئة، ودرف ألومنيوم سوداء زجاج.",
     descEn: "Highly optimized walk-in closet space featuring customized drawer grids, integrated LED profiles, and premium black aluminum glass doors.",
-    image: "/images/711846958_1607152504751177_8435629229339703644_n.jpg",
+    image: "/images/689215323_1577073144425780_5648049577088391907_n.jpg",
     locationAr: "سان ستيفانو، الإسكندرية",
     locationEn: "San Stefano, Alexandria",
     year: "2026",
