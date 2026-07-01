@@ -40,9 +40,9 @@ interface ReelItem {
 
 const reelsData: ReelItem[] = [
   {
-    id: "C_5f6q-vNzS",
+    id: "DZ3Tqgwol3j",
     thumbnail: "/images/656875593_1542746357858459_4466184516215847562_n.jpg",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-kitchen-interior-design-with-wooden-accents-40995-large.mp4",
+    videoUrl: "https://www.instagram.com/reel/DZ3Tqgwol3j/",
     titleAr: "جولة كاملة في مطبخ بولي لاك فخم ومقاوم للمياه",
     titleEn: "Bespoke Poly-lac Luxury Kitchen Video Tour",
     views: "18.5K",
@@ -50,9 +50,9 @@ const reelsData: ReelItem[] = [
     duration: "0:45"
   },
   {
-    id: "C_3u7m-bLmO",
+    id: "DZzdNdjoCMM",
     thumbnail: "/images/627781586_1494778699321892_3431980651333181156_n.jpg",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-modern-kitchen-interior-design-41005-large.mp4",
+    videoUrl: "https://www.instagram.com/p/DZzdNdjoCMM/",
     titleAr: "تفاصيل مطبخ خشب طبيعي أرو كلاسيك عريق",
     titleEn: "Classic Natural Oak Kitchen Craftsmanship",
     views: "24.1K",
@@ -60,9 +60,9 @@ const reelsData: ReelItem[] = [
     duration: "1:00"
   },
   {
-    id: "C_1t8x-dRsF",
+    id: "DZ3Tqgwol3j",
     thumbnail: "/images/689215323_1577073144425780_5648049577088391907_n.jpg",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-cozy-kitchen-interior-41010-large.mp4",
+    videoUrl: "https://www.instagram.com/reel/DZ3Tqgwol3j/",
     titleAr: "شاهد استغلال المساحة في دريسنج روم متكامل",
     titleEn: "Smart Spaces inside a Bespoke Dressing Closet",
     views: "15.3K",
@@ -115,7 +115,7 @@ export default function ReelsSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {reelsData.map((reel) => (
             <div
-              key={reel.id}
+              key={reel.id + Math.random()}
               onClick={() => handleOpenReel(reel)}
               className="group relative aspect-[9/16] rounded-3xl overflow-hidden bg-slate-950 border border-slate-100 cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 max-w-xs mx-auto w-full"
             >
@@ -210,22 +210,22 @@ export default function ReelsSection() {
                 </button>
               </div>
 
-              {/* Native HTML5 Video Player */}
-              <div className="relative flex-grow w-full h-full pt-14 pb-16">
-                <video
-                  src={activeReel.videoUrl}
-                  className="w-full h-full object-cover"
-                  controls
-                  autoPlay
-                  loop
-                  playsInline
+              {/* Instagram Embedded Iframe Player */}
+              <div className="relative flex-grow w-full h-full pt-14 pb-16 bg-zinc-950">
+                <iframe
+                  src={`https://www.instagram.com/p/${activeReel.id}/embed/`}
+                  className="w-full h-full border-0"
+                  scrolling="no"
+                  allowFullScreen
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  title="Instagram Reel Player"
                 />
               </div>
 
               {/* Footer CTA Banner */}
               <div className="absolute bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 p-3 z-30 flex items-center justify-between">
                 <a
-                  href={`https://www.instagram.com/reel/${activeReel.id}/`}
+                  href={activeReel.videoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-xs text-pink-500 hover:text-pink-400 font-bold mx-auto cursor-pointer"
