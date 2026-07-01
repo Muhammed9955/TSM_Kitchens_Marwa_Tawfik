@@ -50,7 +50,7 @@ export default function FloatingSocials() {
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => {
-          trackGAEvent("social_click", "engagement", "instagram_floating");
+          trackGAEvent("insta_click", "engagement", "instagram_floating");
           trackPixelEvent("Contact", { method: "instagram_floating" });
         }}
         className="relative flex items-center justify-center bg-gradient-to-tr from-amber-500 via-pink-600 to-purple-600 text-white rounded-full p-3.5 shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer hover:shadow-[0_0_20px_rgba(219,39,119,0.5)] group"
@@ -66,7 +66,7 @@ export default function FloatingSocials() {
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => {
-          trackGAEvent("social_click", "engagement", "whatsapp_floating");
+          trackGAEvent("whatsapp_click", "engagement", "whatsapp_floating");
           trackPixelEvent("Contact", { method: "whatsapp_floating" });
         }}
         className="relative flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-full p-3.5 shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] group"

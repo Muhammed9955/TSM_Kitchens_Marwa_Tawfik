@@ -106,13 +106,13 @@ export default function Footer() {
             </h4>
             
             <div className="space-y-4">
-              {/* WhatsApp direct phone link */}
+               {/* WhatsApp direct phone link */}
               <a
                 href="https://wa.me/201113561777"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => {
-                  trackGAEvent("social_click", "engagement", "whatsapp_footer");
+                  trackGAEvent("whatsapp_click", "engagement", "whatsapp_footer");
                   trackPixelEvent("Contact", { method: "whatsapp_footer" });
                 }}
                 className="flex items-center gap-2 text-zinc-400 hover:text-pink-500 transition-colors text-xs sm:text-sm"
@@ -127,6 +127,10 @@ export default function Footer() {
                   href="https://www.facebook.com/TSMKITCHENS"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => {
+                    trackGAEvent("facebook_click", "engagement", "facebook_footer");
+                    trackPixelEvent("Contact", { method: "facebook_footer" });
+                  }}
                   className="p-2.5 bg-zinc-900 hover:bg-pink-600 border border-zinc-800 text-zinc-400 hover:text-white rounded-lg transition-all"
                   aria-label="Facebook Page"
                 >
@@ -136,6 +140,10 @@ export default function Footer() {
                   href="https://www.instagram.com/trust.marwa/"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => {
+                    trackGAEvent("insta_click", "engagement", "instagram_footer");
+                    trackPixelEvent("Contact", { method: "instagram_footer" });
+                  }}
                   className="p-2.5 bg-zinc-900 hover:bg-pink-600 border border-zinc-800 text-zinc-400 hover:text-white rounded-lg transition-all"
                   aria-label="Instagram Page"
                 >

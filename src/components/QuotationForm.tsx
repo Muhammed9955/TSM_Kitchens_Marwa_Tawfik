@@ -293,7 +293,8 @@ export default function QuotationForm() {
       : `Hello TSM Kitchens,\n\nKitchen Quote Request:\n\n📐 *Specifications:*\n- Material: ${typeLabel}\n- Selected Color: ${colorLabel}\n- Shape: ${shapeLabel}\n- Dimensions: ${formData.width}m × ${formData.depth}m\n- Height: ${heightLabel}\n- Handles: ${handlesLabel}\n- Hardware: ${hardwareLabel}\n- Countertop: ${countertopLabel}\n- Accessories: ${accLabels || "None"}\n\n👤 *Client Details:*\n- Name: ${formData.name}\n- Phone: ${formData.phone}\n- Location: ${formData.location}\n\n🧮 *Estimate:*\n- ~ ${liveEstimate.meters} running meters\n- EGP ${liveEstimate.min.toLocaleString()} – ${liveEstimate.max.toLocaleString()}\n\n📝 Notes: ${formData.notes || "None"}`;
 
     window.open(`https://wa.me/201113561777?text=${encodeURIComponent(msg)}`, "_blank");
-    trackGAEvent("form_submit", "lead", "quotation_calculator");
+    trackGAEvent("quote_request", "lead", "quotation_calculator");
+    trackGAEvent("whatsapp_click", "engagement", "quotation_submit");
     trackPixelEvent("Lead", { content_name: "Quotation Calculator", value: (liveEstimate.min + liveEstimate.max) / 2, currency: "EGP", content_category: formData.type });
     setStatus("success");
   };

@@ -39,7 +39,7 @@ export default function ReelsSection() {
   const instagramProfileUrl = "https://www.instagram.com/trust.marwa/";
 
   const handleProfileClick = () => {
-    trackGAEvent("social_click", "engagement", "instagram_profile_reels");
+    trackGAEvent("insta_reel_click", "engagement", "instagram_profile_reels");
     trackPixelEvent("Contact", { method: "instagram_profile_reels" });
   };
 
@@ -181,6 +181,10 @@ export default function ReelsSection() {
                   href={`https://www.instagram.com/p/${activeLightboxId}/`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => {
+                    trackGAEvent("reel_watch_direct_click", "video_engagement", activeLightboxId || "");
+                    trackPixelEvent("ViewContent", { content_name: `Reel-External-${activeLightboxId}`, content_category: "Reels" });
+                  }}
                   className="flex items-center gap-1.5 text-xs text-pink-500 hover:text-pink-400 font-bold mx-auto cursor-pointer"
                 >
                   <span>{lang === "ar" ? "المشاهدة مباشرة في إنستغرام" : "Watch directly on Instagram"}</span>

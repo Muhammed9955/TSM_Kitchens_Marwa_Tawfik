@@ -5,6 +5,7 @@ import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, Maximize2, Plus } from "lucide-react";
 import { useLanguage } from "@/locales/LanguageContext";
 import { galleryItems } from "../data/galleryData";
+import { trackGAEvent, trackPixelEvent } from "@/utils/analytics";
 
 export default function Gallery() {
   const [visibleCount, setVisibleCount] = useState(12);
@@ -16,13 +17,24 @@ export default function Gallery() {
 
   const nextImage = useCallback(() => {
     if (lightboxIndex === null) return;
-    setLightboxIndex((prev) => (prev! + 1) % totalItems);
+    const nextIdx = (lightboxIndex + 1) % totalItems;
+    setLightboxIndex(nextIdx);
+    trackGAEvent("gallery_lightbox_next", "engagement", galleryItems[nextIdx].titleEn || `image_${nextIdx}`);
   }, [lightboxIndex, totalItems]);
 
   const prevImage = useCallback(() => {
     if (lightboxIndex === null) return;
-    setLightboxIndex((prev) => (prev! - 1 + totalItems) % totalItems);
+    const prevIdx = (lightboxIndex - 1 + totalItems) % totalItems;
+    setLightboxIndex(prevIdx);
+    trackGAEvent("gallery_lightbox_prev", "engagement", galleryItems[prevIdx].titleEn || `image_${prevIdx}`);
   }, [lightboxIndex, totalItems]);
+
+  const handleOpenLightbox = (index: number) => {
+    setLightboxIndex(index);
+    const item = galleryItems[index];
+    trackGAEvent("view_gallary", "engagement", item.titleEn || `image_${index}`);
+    trackPixelEvent("ViewContent", { content_name: item.titleEn || `Image-${index}`, content_category: "Gallery" });
+  };
 
   // Handle keyboard keys
   useEffect(() => {
@@ -41,7 +53,9 @@ export default function Gallery() {
   }, [lightboxIndex, nextImage, prevImage, lang]);
 
   const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 12, totalItems));
+    const nextCount = Math.min(visibleCount + 12, totalItems);
+    setVisibleCount(nextCount);
+    trackGAEvent("gallery_load_more", "engagement", `Show ${nextCount} images`);
   };
 
   return (
@@ -73,7 +87,7 @@ export default function Gallery() {
           {visibleItems.map((item, index) => (
             <div
               key={item.id}
-              onClick={() => setLightboxIndex(index)}
+              onClick={() => handleOpenLightbox(index)}
               className="group relative aspect-square rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 cursor-pointer shadow-xs hover:border-pink-500/40 hover:shadow-lg transition-all duration-300 opacity-0 animate-fade-in-up"
               style={{
                 animationDelay: `${(index % 12) * 60}ms`,

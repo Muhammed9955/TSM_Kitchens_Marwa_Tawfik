@@ -165,7 +165,7 @@ export default function Projects() {
                     <a
                       href={`${basePath}/#contact`}
                       onClick={() => {
-                        trackGAEvent("request_similar_project_click", "lead", project.titleEn);
+                        trackGAEvent("view_project", "engagement", project.titleEn);
                         trackPixelEvent("InitiateCheckout", { content_name: project.titleEn });
                       }}
                       className="inline-flex items-center justify-center gap-2 bg-pink-600 hover:bg-pink-700 text-white font-bold px-7 py-3.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer text-sm"
