@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Image from "next/image";
-import { Calculator, ChevronRight, ChevronLeft, Send, CheckCircle2, RotateCcw, HelpCircle, Layers, Maximize, Settings } from "lucide-react";
+import { Calculator, ChevronRight, ChevronLeft, Send, CheckCircle2, RotateCcw, Layers, LayoutDashboard, Settings, User } from "lucide-react";
 import { useLanguage } from "@/locales/LanguageContext";
 import { trackGAEvent, trackPixelEvent } from "@/utils/analytics";
 
+// ─── Types ───────────────────────────────────────────────────────────────────
 interface QuoteFormData {
   type: string;
   shape: string;
@@ -38,107 +39,151 @@ const initialFormData: QuoteFormData = {
   notes: "",
 };
 
-interface SelectionOption {
+// ─── Material Options (Targeted texture shots + tier) ───────────────────────
+interface MaterialOption {
   id: string;
   titleAr: string;
   titleEn: string;
-  descAr: string;
-  descEn: string;
+  tagAr: string;
+  tagEn: string;
+  tier: "budget" | "popular" | "premium" | "ultra";
+  tierColorClass: string;
   img: string;
+  features: string[];
+  featuresAr: string[];
 }
 
-const materialOptions: SelectionOption[] = [
+const materialOptions: MaterialOption[] = [
   {
     id: "poly_lac",
-    titleAr: "بولي لاك (Poly-lac)",
-    titleEn: "Poly-lac Kitchens",
-    descAr: "خامة تركية ذات لمعان فائق ومقاومة ممتازة للحرارة والخدش والرطوبة.",
-    descEn: "Ultra-glossy Turkish panels with high resistance to heat, scratches and steam.",
-    img: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=250&q=80"
+    titleAr: "بولي لاك",
+    titleEn: "Poly-lac",
+    tagAr: "الأكثر مبيعاً",
+    tagEn: "Best Seller",
+    tier: "popular",
+    tierColorClass: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+    img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&q=80",
+    features: ["Heat resistant", "Scratch proof", "Easy to clean"],
+    featuresAr: ["مقاوم للحرارة", "مقاوم للخدش", "سهل التنظيف"],
   },
   {
     id: "acrylic",
-    titleAr: "أكريليك فاخر (Acrylic)",
+    titleAr: "أكريليك",
     titleEn: "High-Gloss Acrylic",
-    descAr: "مظهر زجاجي لامع وأنيق للغاية يعطي اتساعاً بصرياً مذهلاً لغرفة المطبخ.",
-    descEn: "Stunning mirror-glass visual depth that expands small kitchen spaces.",
-    img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=250&q=80"
+    tagAr: "لمعان زجاجي",
+    tagEn: "Mirror Gloss",
+    tier: "popular",
+    tierColorClass: "bg-pink-500/20 text-pink-300 border-pink-500/30",
+    img: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=400&q=80",
+    features: ["Mirror-like gloss", "Expands space visually", "Modern look"],
+    featuresAr: ["لمعان مرآوي", "يوسع المساحة بصرياً", "مظهر عصري"],
   },
   {
     id: "uv_lacquer",
-    titleAr: "يو في لاك (UV Lacquer)",
-    titleEn: "UV-Lacquer Styling",
-    descAr: "أحدث صيحات المطابخ بألوان مطفية ولمعان فخم مع حماية فائقة ضد البقع والأشعة.",
-    descEn: "Modern sleek finish in matte or gloss with robust defense against grease stains.",
-    img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=250&q=80"
+    titleAr: "يو في لاك",
+    titleEn: "UV Lacquer",
+    tagAr: "مطفي أو لامع",
+    tagEn: "Matte or Gloss",
+    tier: "premium",
+    tierColorClass: "bg-violet-500/20 text-violet-300 border-violet-500/30",
+    img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80",
+    features: ["UV grease shield", "Matte or gloss", "Rich color range"],
+    featuresAr: ["حماية ضد البقع", "مطفي أو لامع", "ألوان ثرية"],
   },
   {
     id: "natural_wood",
-    titleAr: "خشب أرو كلاسيك (Oak Wood)",
-    titleEn: "Classic Natural Oak",
-    descAr: "خشب أرو طبيعي فخم معالج بالكامل ليعطي مطبخك فخامة كلاسيكية تدوم العمر كله.",
-    descEn: "Premium solid oak wood treated for long-term water and moisture resistance.",
-    img: "https://images.unsplash.com/photo-1565183997392-2f6f122e5912?auto=format&fit=crop&w=250&q=80"
+    titleAr: "خشب أرو طبيعي",
+    titleEn: "Natural Oak Wood",
+    tagAr: "كلاسيك فاخر",
+    tagEn: "Classic Luxury",
+    tier: "ultra",
+    tierColorClass: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+    img: "https://images.unsplash.com/photo-1565183997392-2f6f122e5912?auto=format&fit=crop&w=400&q=80",
+    features: ["Solid natural oak", "Lifetime durability", "Classic elegance"],
+    featuresAr: ["خشب أرو طبيعي", "متانة مدى الحياة", "أناقة كلاسيكية"],
   },
   {
     id: "dressing",
-    titleAr: "دريسنج روم وغرف ملابس",
-    titleEn: "Walk-in Dressing Closet",
-    descAr: "تصاميم وتنسيقات داخلية ذكية ومضاءة لتنظيم الملابس والمجوهرات والشنط بكفاءة.",
-    descEn: "Bespoke storage systems with LED hangers and pull-out trays for organizing apparel.",
-    img: "https://images.unsplash.com/photo-1558882224-cca166733360?auto=format&fit=crop&w=250&q=80"
-  }
+    titleAr: "دريسنج روم",
+    titleEn: "Dressing Closet",
+    tagAr: "غرف ملابس مضاءة",
+    tagEn: "Walk-in Wardrobe",
+    tier: "premium",
+    tierColorClass: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+    img: "https://images.unsplash.com/photo-1558882224-cca166733360?auto=format&fit=crop&w=400&q=80",
+    features: ["LED lighting", "Pull-out trays", "Custom compartments"],
+    featuresAr: ["إضاءة ليد مدمجة", "أدراج سحب هيدروليك", "تقسيمات حسب الطلب"],
+  },
 ];
 
-const shapeOptions: SelectionOption[] = [
-  {
-    id: "straight",
-    titleAr: "جدار مستقيم (I-Shape)",
-    titleEn: "Straight I-Shape",
-    descAr: "مثالي للمطابخ الصغيرة، حيث تصطف الخزائن والأجهزة على جدار واحد.",
-    descEn: "Best for tight areas. All counters and prep zones align along one single wall.",
-    img: "https://images.unsplash.com/photo-1556909212-d5b604ad0567?auto=format&fit=crop&w=250&q=80"
-  },
-  {
-    id: "parallel",
-    titleAr: "ممر مزدوج (Parallel)",
-    titleEn: "Parallel / Galley",
-    descAr: "توزيع مقابل يوفر مساحتي عمل متوازيتين وسهولة الحركة بين الأجهزة.",
-    descEn: "Features two facing rows of cabinets, creating an efficient and fast workspace.",
-    img: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=250&q=80"
-  },
-  {
-    id: "l_shape",
-    titleAr: "شكل L زاوي (L-Shape)",
-    titleEn: "Corner L-Shape",
-    descAr: "الشكل الأكثر شعبية، يسهل توزيع مثلث الحركة بحرية في الزوايا.",
-    descEn: "Highly popular setup optimizing corner workspaces and matching open-concept areas.",
-    img: "https://images.unsplash.com/photo-1556912173-3bb406ef7e77?auto=format&fit=crop&w=250&q=80"
-  },
-  {
-    id: "u_shape",
-    titleAr: "شكل U متكامل (U-Shape)",
-    titleEn: "Spacious U-Shape",
-    descAr: "توزيع على 3 جدران يوفر مساحات تخزين وتحضير رخام هائلة ومريحة.",
-    descEn: "Surrounds the cook on three sides with maximum cabinets and countertop spaces.",
-    img: "https://images.unsplash.com/photo-1556911220-115b1368a180?auto=format&fit=crop&w=250&q=80"
-  },
-  {
-    id: "island",
-    titleAr: "مع جزيرة وسطية (Island)",
-    titleEn: "Center Island Setup",
-    descAr: "إضافة جزيرة للمطبخ تستخدم كمنطقة طبخ، غسيل، أو كطاولة لتناول الوجبات.",
-    descEn: "Adds a center focal point for cooking, washing, or gathering for morning meals.",
-    img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=250&q=80"
-  }
+// ─── SVG Floor Plan Shapes ───────────────────────────────────────────────────
+const ShapeSVGs: Record<string, React.FC<{ selected: boolean }>> = {
+  straight: ({ selected }) => (
+    <svg viewBox="0 0 80 60" className="w-full h-full" fill="none">
+      <rect x="4" y="22" width="72" height="16" rx="3" fill={selected ? "#ec4899" : "#475569"} />
+      <rect x="4" y="22" width="72" height="5" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
+    </svg>
+  ),
+  parallel: ({ selected }) => (
+    <svg viewBox="0 0 80 60" className="w-full h-full" fill="none">
+      <rect x="4" y="8" width="72" height="14" rx="3" fill={selected ? "#ec4899" : "#475569"} />
+      <rect x="4" y="8" width="72" height="4" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
+      <rect x="4" y="38" width="72" height="14" rx="3" fill={selected ? "#ec4899" : "#475569"} />
+      <rect x="4" y="38" width="72" height="4" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
+    </svg>
+  ),
+  l_shape: ({ selected }) => (
+    <svg viewBox="0 0 80 60" className="w-full h-full" fill="none">
+      <rect x="4" y="4" width="14" height="52" rx="3" fill={selected ? "#ec4899" : "#475569"} />
+      <rect x="4" y="42" width="72" height="14" rx="3" fill={selected ? "#ec4899" : "#475569"} />
+      <rect x="4" y="4" width="5" height="52" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
+      <rect x="4" y="42" width="72" height="5" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
+    </svg>
+  ),
+  u_shape: ({ selected }) => (
+    <svg viewBox="0 0 80 60" className="w-full h-full" fill="none">
+      <rect x="4" y="4" width="14" height="52" rx="3" fill={selected ? "#ec4899" : "#475569"} />
+      <rect x="62" y="4" width="14" height="52" rx="3" fill={selected ? "#ec4899" : "#475569"} />
+      <rect x="4" y="42" width="72" height="14" rx="3" fill={selected ? "#ec4899" : "#475569"} />
+      <rect x="4" y="4" width="5" height="52" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
+      <rect x="62" y="4" width="5" height="52" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
+      <rect x="4" y="42" width="72" height="5" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
+    </svg>
+  ),
+  island: ({ selected }) => (
+    <svg viewBox="0 0 80 60" className="w-full h-full" fill="none">
+      <rect x="4" y="4" width="72" height="14" rx="3" fill={selected ? "#ec4899" : "#475569"} />
+      <rect x="4" y="4" width="72" height="5" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
+      <rect x="20" y="36" width="40" height="18" rx="3" fill={selected ? "#ec4899" : "#475569"} opacity="0.7" />
+      <rect x="20" y="36" width="40" height="5" rx="2" fill={selected ? "#f472b6" : "#64748b"} opacity="0.7" />
+    </svg>
+  ),
+};
+
+interface ShapeOption { id: string; titleAr: string; titleEn: string; descAr: string; descEn: string; }
+const shapeOptions: ShapeOption[] = [
+  { id: "straight", titleAr: "خطي مستقيم", titleEn: "Straight", descAr: "جدار واحد — للمساحات الضيقة", descEn: "One wall — for narrow spaces" },
+  { id: "parallel", titleAr: "ممر موازي", titleEn: "Galley", descAr: "جداران متقابلان — حركة سريعة", descEn: "Two facing walls — fast workflow" },
+  { id: "l_shape", titleAr: "شكل L", titleEn: "L-Shape", descAr: "الأكثر شعبية — مرونة التوزيع", descEn: "Most popular — flexible layout" },
+  { id: "u_shape", titleAr: "شكل U", titleEn: "U-Shape", descAr: "3 جدران — أقصى مساحة تخزين", descEn: "3 walls — maximum storage" },
+  { id: "island", titleAr: "جزيرة وسطية", titleEn: "With Island", descAr: "جزيرة مستقلة — للمطابخ الكبيرة", descEn: "Center island — for open spaces" },
 ];
 
+// ─── Tier badge label ────────────────────────────────────────────────────────
+function getTierLabel(tier: string, lang: string): string {
+  if (tier === "budget") return lang === "ar" ? "اقتصادي" : "Budget";
+  if (tier === "popular") return lang === "ar" ? "⭐ الأكثر طلباً" : "⭐ Popular";
+  if (tier === "premium") return lang === "ar" ? "💎 بريميوم" : "💎 Premium";
+  return lang === "ar" ? "✨ الفاخر الأعلى" : "✨ Ultra Luxury";
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
 export default function QuotationForm() {
   const { lang } = useLanguage();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1); // 1=Material, 2=Shape, 3=Dimensions&Options, 4=Contact
   const [formData, setFormData] = useState<QuoteFormData>(initialFormData);
-  const [priceResult, setPriceResult] = useState<{ min: number; max: number; meters: number } | null>(null);
   const [status, setStatus] = useState<"idle" | "success">("idle");
+  const [priceResult, setPriceResult] = useState<{ min: number; max: number; meters: number } | null>(null);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -147,195 +192,109 @@ export default function QuotationForm() {
 
   const handleCheckboxChange = (accessory: string) => {
     setFormData((prev) => {
-      const alreadySelected = prev.accessories.includes(accessory);
-      return {
-        ...prev,
-        accessories: alreadySelected
-          ? prev.accessories.filter((a) => a !== accessory)
-          : [...prev.accessories, accessory],
-      };
+      const has = prev.accessories.includes(accessory);
+      return { ...prev, accessories: has ? prev.accessories.filter((a) => a !== accessory) : [...prev.accessories, accessory] };
     });
   };
 
-  const calculateEstimate = () => {
+  // Live price estimate (recalculates on every render)
+  const liveEstimate = useMemo(() => {
     const w = parseFloat(formData.width) || 0;
     const d = parseFloat(formData.depth) || 0;
-    let runningMeters = 0;
+    let rm = 0;
+    if (formData.shape === "straight") rm = w;
+    else if (formData.shape === "parallel") rm = w * 2;
+    else if (formData.shape === "l_shape") rm = w + d - 0.6;
+    else if (formData.shape === "u_shape") rm = w + (d * 2) - 1.2;
+    else rm = w + 1.2;
+    if (rm < 1) rm = 1;
 
-    switch (formData.shape) {
-      case "straight":
-        runningMeters = w;
-        break;
-      case "parallel":
-        runningMeters = w * 2;
-        break;
-      case "l_shape":
-        runningMeters = w + d - 0.6;
-        break;
-      case "u_shape":
-        runningMeters = w + (d * 2) - 1.2;
-        break;
-      case "island":
-        runningMeters = w + 1.2;
-        break;
-      default:
-        runningMeters = w;
-    }
+    let ppm = 8000;
+    if (formData.type === "poly_lac") ppm = 9500;
+    else if (formData.type === "uv_lacquer") ppm = 9000;
+    else if (formData.type === "natural_wood") ppm = 12500;
+    else if (formData.type === "dressing") ppm = 7500;
+    if (formData.height === "ceiling") ppm *= 1.15;
 
-    if (runningMeters < 1) runningMeters = 1;
+    let ct = 0;
+    if (formData.countertop === "quartz") ct = 5500;
+    else if (formData.countertop === "granite") ct = 3500;
+    else if (formData.countertop === "marble") ct = 4000;
 
-    // 1. Base cost per meter
-    let pricePerMeter = 8000; // Acrylic
-    if (formData.type === "poly_lac") pricePerMeter = 9500;
-    if (formData.type === "uv_lacquer") pricePerMeter = 9000;
-    if (formData.type === "natural_wood") pricePerMeter = 12500;
-    if (formData.type === "dressing") pricePerMeter = 7500;
+    let extras = 0;
+    if (formData.handles === "gola") extras += rm * 350;
+    if (formData.handles === "push_open") extras += rm * 250;
+    if (formData.hardwareClass === "blum") extras += 5000;
+    else if (formData.hardwareClass === "smart_soft") extras += 2000;
+    if (formData.accessories.includes("cargo")) extras += 4500;
+    if (formData.accessories.includes("led")) extras += 2000;
+    if (formData.accessories.includes("builtin")) extras += 1500;
 
-    // 2. Adjust for Height
-    if (formData.height === "ceiling") {
-      pricePerMeter = pricePerMeter * 1.15; // Full ceiling-high cabinets add 15% cost
-    }
-
-    let kitchenCost = runningMeters * pricePerMeter;
-
-    // 3. Countertop costs
-    let countertopPerMeter = 0;
-    if (formData.countertop === "quartz") countertopPerMeter = 5500;
-    if (formData.countertop === "granite") countertopPerMeter = 3500;
-    if (formData.countertop === "marble") countertopPerMeter = 4000;
-
-    let countertopCost = runningMeters * countertopPerMeter;
-
-    // 4. Handles premium adjustments
-    let handlesCost = 0;
-    if (formData.handles === "gola") handlesCost += runningMeters * 350; // Aluminum gola profile per meter
-    if (formData.handles === "push_open") handlesCost += runningMeters * 250; // Tip-on mechanism
-
-    // 5. Hardware Class premium adjustments
-    let hardwareCost = 0;
-    if (formData.hardwareClass === "blum") hardwareCost += 5000; // Blum flat upgrade
-    if (formData.hardwareClass === "smart_soft") hardwareCost += 2000; // Generic smart soft-close
-
-    // 6. Extra accessories
-    let accessoriesCost = 0;
-    if (formData.accessories.includes("cargo")) accessoriesCost += 4500;
-    if (formData.accessories.includes("led")) accessoriesCost += 2000;
-    if (formData.accessories.includes("builtin")) accessoriesCost += 1500;
-
-    const totalEstimate = kitchenCost + countertopCost + handlesCost + hardwareCost + accessoriesCost;
-
+    const total = rm * ppm + rm * ct + extras;
     return {
-      min: Math.round((totalEstimate * 0.9) / 500) * 500,
-      max: Math.round((totalEstimate * 1.1) / 500) * 500,
-      meters: Math.round(runningMeters * 10) / 10,
+      min: Math.round((total * 0.9) / 500) * 500,
+      max: Math.round((total * 1.1) / 500) * 500,
+      meters: Math.round(rm * 10) / 10,
     };
-  };
-
-  const handleNext = () => {
-    if (step < 3) setStep((prev) => prev + 1);
-  };
-
-  const handleBack = () => {
-    if (step > 1) setStep((prev) => prev - 1);
-  };
+  }, [formData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setPriceResult(liveEstimate);
 
-    const calculation = calculateEstimate();
-    setPriceResult(calculation);
+    const typeLabel = materialOptions.find((m) => m.id === formData.type)?.[lang === "ar" ? "titleAr" : "titleEn"] ?? formData.type;
+    const shapeLabel = shapeOptions.find((s) => s.id === formData.shape)?.[lang === "ar" ? "titleAr" : "titleEn"] ?? formData.shape;
 
-    const typeLabel =
-      formData.type === "poly_lac"
-        ? (lang === "ar" ? "بولي لاك (Poly-lac)" : "Poly-lac")
-        : formData.type === "acrylic"
-        ? (lang === "ar" ? "أكريليك فاخر" : "Premium Acrylic")
-        : formData.type === "uv_lacquer"
-        ? (lang === "ar" ? "يو في لاك (UV-Lacquer)" : "UV-Lacquer")
-        : formData.type === "natural_wood"
-        ? (lang === "ar" ? "خشب أرو طبيعي" : "Natural Oak Wood")
-        : (lang === "ar" ? "دريسنج روم وغرف ملابس" : "Walk-in Dressing Room");
+    const countertopLabel = formData.countertop === "quartz" ? (lang === "ar" ? "كوارتز" : "Quartz")
+      : formData.countertop === "granite" ? (lang === "ar" ? "جرانيت" : "Granite")
+      : formData.countertop === "marble" ? (lang === "ar" ? "رخام" : "Marble")
+      : (lang === "ar" ? "بدون رخام" : "None");
 
-    const shapeLabel =
-      formData.shape === "straight"
-        ? (lang === "ar" ? "خطي مستقيم" : "Straight Layout")
-        : formData.shape === "parallel"
-        ? (lang === "ar" ? "ممر موازي" : "Parallel Layout")
-        : formData.shape === "l_shape"
-        ? (lang === "ar" ? "شكل L" : "L-Shape Layout")
-        : formData.shape === "u_shape"
-        ? (lang === "ar" ? "شكل U" : "U-Shape Layout")
-        : (lang === "ar" ? "مع جزيرة وسطى" : "Island Layout");
+    const heightLabel = formData.height === "ceiling"
+      ? (lang === "ar" ? "واصل للسقف 260سم+" : "Ceiling-High 260cm+")
+      : (lang === "ar" ? "قياسي 220سم" : "Standard 220cm");
 
-    const countertopLabel =
-      formData.countertop === "quartz"
-        ? (lang === "ar" ? "كوارتز مستورد" : "Imported Quartz")
-        : formData.countertop === "granite"
-        ? (lang === "ar" ? "جرانيت مستورد" : "Imported Granite")
-        : formData.countertop === "marble"
-        ? (lang === "ar" ? "رخام طبيعي" : "Natural Marble")
-        : (lang === "ar" ? "بدون رخام" : "None");
+    const handlesLabel = formData.handles === "gola" ? (lang === "ar" ? "مجرى جولا مخفي" : "Hidden Gola Profile")
+      : formData.handles === "push_open" ? (lang === "ar" ? "فتح بالضغط (Tip-on)" : "Push-to-Open (Tip-on)")
+      : (lang === "ar" ? "مقابض بارزة" : "Standard Handles");
 
-    const heightLabel =
-      formData.height === "ceiling"
-        ? (lang === "ar" ? "واصل للسقف (ارتفاع 260سم+)" : "Ceiling-High (260cm+)")
-        : (lang === "ar" ? "ارتفاع قياسي (220سم)" : "Standard Height (220cm)");
+    const hardwareLabel = formData.hardwareClass === "blum" ? "Blum Austrian"
+      : formData.hardwareClass === "smart_soft" ? (lang === "ar" ? "هيدروليك صامت" : "Smart Soft-close")
+      : (lang === "ar" ? "أساسي" : "Basic");
 
-    const handlesLabel =
-      formData.handles === "gola"
-        ? (lang === "ar" ? "مجرى ألومنيوم مخفي (Gola)" : "Hidden Gola Profile")
-        : formData.handles === "push_open"
-        ? (lang === "ar" ? "فتح بالضغط باللمس (Tip-on)" : "Push-to-Open (Tip-on)")
-        : (lang === "ar" ? "مقابض بارزة تقليدية" : "Standard Handles");
+    const accLabels = formData.accessories.map((a) =>
+      a === "cargo" ? (lang === "ar" ? "كارجو" : "Cargo") :
+      a === "led" ? "LED" : (lang === "ar" ? "بلت-إن" : "Built-in")
+    ).join(", ");
 
-    const hardwareLabel =
-      formData.hardwareClass === "blum"
-        ? (lang === "ar" ? "بلوم نمساوي فاخر (Blum)" : "Premium Blum Austrian")
-        : formData.hardwareClass === "smart_soft"
-        ? (lang === "ar" ? "هيدروليك ذكي صامت" : "Smart Soft-Close Hydraulic")
-        : (lang === "ar" ? "إكسسوارات هيدروليك أساسية" : "Basic Soft-Close");
+    const msg = lang === "ar"
+      ? `مرحباً TSM Kitchens،\n\nطلب تسعيرة مطبخ:\n\n📐 *المواصفات:*\n- الخامة: ${typeLabel}\n- الشكل: ${shapeLabel}\n- الأبعاد: ${formData.width}م × ${formData.depth}م\n- الارتفاع: ${heightLabel}\n- المقابض: ${handlesLabel}\n- الإكسسوارات: ${hardwareLabel}\n- الرخام: ${countertopLabel}\n- الإضافات: ${accLabels || "لا توجد"}\n\n👤 *بيانات العميل:*\n- الاسم: ${formData.name}\n- الهاتف: ${formData.phone}\n- المنطقة: ${formData.location}\n\n🧮 *التقدير التقريبي:*\n- ~ ${liveEstimate.meters} متر طولي\n- بين ${liveEstimate.min.toLocaleString()} و ${liveEstimate.max.toLocaleString()} ج.م\n\n📝 ملاحظات: ${formData.notes || "لا توجد"}`
+      : `Hello TSM Kitchens,\n\nKitchen Quote Request:\n\n📐 *Specifications:*\n- Material: ${typeLabel}\n- Shape: ${shapeLabel}\n- Dimensions: ${formData.width}m × ${formData.depth}m\n- Height: ${heightLabel}\n- Handles: ${handlesLabel}\n- Hardware: ${hardwareLabel}\n- Countertop: ${countertopLabel}\n- Accessories: ${accLabels || "None"}\n\n👤 *Client Details:*\n- Name: ${formData.name}\n- Phone: ${formData.phone}\n- Location: ${formData.location}\n\n🧮 *Estimate:*\n- ~ ${liveEstimate.meters} running meters\n- EGP ${liveEstimate.min.toLocaleString()} – ${liveEstimate.max.toLocaleString()}\n\n📝 Notes: ${formData.notes || "None"}`;
 
-    const accLabels = formData.accessories.map((acc) => {
-      if (acc === "cargo") return lang === "ar" ? "وحدة كارجو طولية" : "Pantry Cargo Unit";
-      if (acc === "led") return lang === "ar" ? "ليد بروفايل مخفي" : "Cabinet LED Profiles";
-      return lang === "ar" ? "تجهيز بلت-إن" : "Built-in Appliances Prep";
-    }).join(" - ");
-
-    const formattedMessage = lang === "ar"
-      ? `مرحباً TSM Kitchens،\n\nأود الحصول على تسعير تقديري وتفصيلي لمشروعي:\n\n📐 *المواصفات الفنية:*\n- *النوع:* ${typeLabel}\n- *الشكل:* ${shapeLabel}\n- *الأبعاد:* ${formData.width}م عرض × ${formData.depth}م عمق\n- *الارتفاع:* ${heightLabel}\n- *المقابض:* ${handlesLabel}\n- *الإكسسوارات:* ${hardwareLabel}\n- *الرخام:* ${countertopLabel}\n- *الإضافات:* ${accLabels || "لا توجد"}\n\n👤 *بيانات العميل:*\n- *الاسم:* ${formData.name}\n- *الهاتف:* ${formData.phone}\n- *العنوان:* ${formData.location}\n\n🧮 *التقدير التلقائي الأولي:*\n- *الطول المقدر:* ~ ${calculation.meters} متر طولي\n- *السعر التقريبي للمشروع:* بين ${calculation.min.toLocaleString()} و ${calculation.max.toLocaleString()} جنيه مصري\n\n📝 *ملاحظات:* ${formData.notes || "لا توجد"}`
-      : `Hello TSM Kitchens,\n\nI'd like to get an estimated quote for my kitchen project:\n\n📐 *Specifications:*\n- *Material Type:* ${typeLabel}\n- *Layout Shape:* ${shapeLabel}\n- *Dimensions:* ${formData.width}m width x ${formData.depth}m depth\n- *Height:* ${heightLabel}\n- *Handles:* ${handlesLabel}\n- *Hardware Class:* ${hardwareLabel}\n- *Countertop:* ${countertopLabel}\n- *Accessories:* ${accLabels || "None"}\n\n👤 *Client Details:*\n- *Name:* ${formData.name}\n- *Phone:* ${formData.phone}\n- *Location:* ${formData.location}\n\n🧮 *Automated Estimate:*\n- *Est. Length:* ~ ${calculation.meters} running meters\n- *Est. Total Budget:* EGP ${calculation.min.toLocaleString()} - EGP ${calculation.max.toLocaleString()}\n\n📝 *Notes:* ${formData.notes || "None"}`;
-
-    const url = `https://wa.me/201113561777?text=${encodeURIComponent(formattedMessage)}`;
-    window.open(url, "_blank");
-
+    window.open(`https://wa.me/201113561777?text=${encodeURIComponent(msg)}`, "_blank");
     trackGAEvent("form_submit", "lead", "quotation_calculator");
-    trackPixelEvent("Lead", {
-      content_name: "Quotation Calculator",
-      value: (calculation.min + calculation.max) / 2,
-      currency: "EGP",
-      content_category: formData.type,
-    });
-
+    trackPixelEvent("Lead", { content_name: "Quotation Calculator", value: (liveEstimate.min + liveEstimate.max) / 2, currency: "EGP", content_category: formData.type });
     setStatus("success");
   };
 
-  const handleReset = () => {
-    setFormData(initialFormData);
-    setPriceResult(null);
-    setStatus("idle");
-    setStep(1);
-  };
+  const handleReset = () => { setFormData(initialFormData); setPriceResult(null); setStatus("idle"); setStep(1); };
+
+  const STEPS = [
+    { icon: Layers, labelAr: "الخامة", labelEn: "Material" },
+    { icon: LayoutDashboard, labelAr: "الشكل", labelEn: "Layout" },
+    { icon: Settings, labelAr: "الخيارات", labelEn: "Options" },
+    { icon: User, labelAr: "العميل", labelEn: "Contact" },
+  ];
 
   return (
     <section id="quotation" className="py-20 sm:py-28 bg-slate-900 text-white relative overflow-hidden border-t border-slate-800">
-      {/* Background decorations */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-pink-500/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-fuchsia-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" dir={lang === "ar" ? "rtl" : "ltr"}>
-        
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-14">
           <span className="text-pink-500 font-bold tracking-wider text-xs sm:text-sm uppercase mb-2 block">
             {lang === "ar" ? "حساب التكلفة التقديرية" : "Quote Calculator"}
           </span>
@@ -343,489 +302,377 @@ export default function QuotationForm() {
             {lang === "ar" ? "طلب عرض سعر تفصيلي للمطبخ" : "Get a Customized Kitchen Quote"}
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            {lang === "ar" 
-              ? "اختر نوع الخامات وتفاصيل المطبخ بالكامل واحصل على تسعير فوري ومطابقة مباشرة مع واتساب المعرض."
-              : "Select materials, shapes, and options to get an instant budget range and schedule inspection."
-            }
+            {lang === "ar"
+              ? "اختر خامة المطبخ وشكله ومقاساته وتفاصيله واحصل على تسعير فوري يُرسَل مباشرة إلى واتساب المعرض."
+              : "Pick your material, layout, dimensions and finishes to get an instant quote sent to WhatsApp."}
           </p>
           <div className="w-16 h-1 bg-pink-600 mx-auto rounded-full mt-4" />
         </div>
 
-        {/* Calculation Success state */}
+        {/* Success State */}
         {status === "success" && priceResult ? (
-          <div className="bg-white text-slate-900 rounded-3xl p-8 sm:p-12 shadow-2xl border border-pink-500/20 max-w-2xl mx-auto animate-scale-up">
-            <div className="flex flex-col items-center text-center">
-              <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-4 animate-ping-once" />
+          <div className="bg-white text-slate-900 rounded-3xl p-8 sm:p-12 shadow-2xl border border-pink-500/20 max-w-2xl mx-auto">
+            <div className="flex flex-col items-center text-center mb-8">
+              <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-4" />
               <h3 className="text-2xl font-extrabold text-slate-900 mb-2">
-                {lang === "ar" ? "تم حساب عرض السعر وإرساله!" : "Quote Computed & Sent!"}
+                {lang === "ar" ? "تم إرسال طلبك بنجاح!" : "Quote Sent Successfully!"}
               </h3>
-              <p className="text-slate-500 text-sm max-w-sm mb-8 leading-relaxed">
+              <p className="text-slate-500 text-sm max-w-sm leading-relaxed">
                 {lang === "ar"
-                  ? "تم إعداد الطلب وتوجيهك إلى واتساب المعرض لتأكيد الموعد للمعاينة وتحديد التصميم."
-                  : "Your quote range is prepared. We redirected you to WhatsApp to complete your request."}
+                  ? "تم توجيهك إلى واتساب المعرض. سيتواصل معك فريقنا لتأكيد موعد المعاينة."
+                  : "You've been redirected to our WhatsApp. Our team will contact you to schedule a site visit."}
               </p>
             </div>
-
-            {/* Bill Receipt summary */}
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mb-8 text-sm space-y-4">
-              <div className="flex justify-between border-b border-slate-200/60 pb-3">
-                <span className="text-slate-400 font-medium">{lang === "ar" ? "الخامة:" : "Material:"}</span>
-                <span className="font-bold text-slate-800">
-                  {formData.type === "poly_lac" ? (lang === "ar" ? "بولي لاك" : "Poly-lac") : 
-                   formData.type === "acrylic" ? (lang === "ar" ? "أكريليك" : "Acrylic") : 
-                   formData.type === "natural_wood" ? (lang === "ar" ? "خشب طبيعي" : "Natural Wood") :
-                   formData.type === "uv_lacquer" ? (lang === "ar" ? "يو في لاك" : "UV Lacquer") : 
-                   (lang === "ar" ? "دريسنج روم" : "Dressing Closet")}
-                </span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-3">
-                <span className="text-slate-400 font-medium">{lang === "ar" ? "المخطط الهيكلي:" : "Layout Shape:"}</span>
-                <span className="font-bold text-slate-800">
-                  {formData.shape === "straight" ? (lang === "ar" ? "خطي مستقيم" : "Straight") : 
-                   formData.shape === "parallel" ? (lang === "ar" ? "ممر موازي" : "Parallel") : 
-                   formData.shape === "l_shape" ? (lang === "ar" ? "شكل L" : "L-Shape") : 
-                   formData.shape === "u_shape" ? (lang === "ar" ? "شكل U" : "U-Shape") : 
-                   (lang === "ar" ? "مع جزيرة وسطى" : "With Island")}
-                </span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-3">
-                <span className="text-slate-400 font-medium">{lang === "ar" ? "المحيط المقدر:" : "Est. Running Length:"}</span>
-                <span className="font-bold text-slate-800">~ {priceResult.meters} {lang === "ar" ? "متر طولي" : "meters"}</span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-3">
-                <span className="text-slate-400 font-medium">{lang === "ar" ? "ارتفاع الوحدات:" : "Cabinet Height:"}</span>
-                <span className="font-bold text-slate-800">
-                  {formData.height === "ceiling" ? (lang === "ar" ? "واصل للسقف" : "Ceiling-High") : (lang === "ar" ? "ارتفاع قياسي" : "Standard")}
-                </span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-3">
-                <span className="text-slate-400 font-medium">{lang === "ar" ? "فئة الإكسسوارات:" : "Hardware Class:"}</span>
-                <span className="font-bold text-slate-800">
-                  {formData.hardwareClass === "blum" ? (lang === "ar" ? "بلوم نمساوي" : "Blum Austrian") : 
-                   formData.hardwareClass === "smart_soft" ? (lang === "ar" ? "هيدروليك صامت" : "Smart Soft-close") : 
-                   (lang === "ar" ? "أساسي" : "Basic")}
-                </span>
-              </div>
-              <div className="flex justify-between pt-2">
-                <span className="text-pink-600 font-bold text-base">{lang === "ar" ? "التسعير التقريبي المتوقع:" : "Estimated Price Range:"}</span>
+            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mb-6 text-sm space-y-3">
+              {[
+                [lang === "ar" ? "الخامة:" : "Material:", materialOptions.find(m => m.id === formData.type)?.[lang === "ar" ? "titleAr" : "titleEn"]],
+                [lang === "ar" ? "الشكل:" : "Layout:", shapeOptions.find(s => s.id === formData.shape)?.[lang === "ar" ? "titleAr" : "titleEn"]],
+                [lang === "ar" ? "المحيط التقريبي:" : "Est. Length:", `~ ${priceResult.meters} ${lang === "ar" ? "متر طولي" : "meters"}`],
+              ].map(([label, val]) => (
+                <div key={String(label)} className="flex justify-between border-b border-slate-100 pb-2">
+                  <span className="text-slate-400 font-medium">{label}</span>
+                  <span className="font-bold text-slate-800">{val}</span>
+                </div>
+              ))}
+              <div className="flex justify-between pt-1">
+                <span className="text-pink-600 font-bold">{lang === "ar" ? "التقدير:" : "Est. Range:"}</span>
                 <span className="font-extrabold text-pink-600 text-lg">
-                  {priceResult.min.toLocaleString()} - {priceResult.max.toLocaleString()} {lang === "ar" ? "ج.م" : "EGP"}
+                  {priceResult.min.toLocaleString()} – {priceResult.max.toLocaleString()} {lang === "ar" ? "ج.م" : "EGP"}
                 </span>
               </div>
             </div>
-
-            <button
-              onClick={handleReset}
-              className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl cursor-pointer transition-all"
-            >
+            <button onClick={handleReset} className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl cursor-pointer transition-all">
               <RotateCcw size={16} />
-              <span>{lang === "ar" ? "حساب تسعيرة جديدة" : "Compute Another Quote"}</span>
+              <span>{lang === "ar" ? "حساب تسعيرة جديدة" : "Start New Quote"}</span>
             </button>
           </div>
         ) : (
-          /* Wizard form */
           <div className="bg-slate-800 border border-slate-700/80 rounded-3xl shadow-2xl p-6 sm:p-10 max-w-3xl mx-auto">
-            
-            {/* Steps bar */}
-            <div className="flex items-center justify-between mb-10 border-b border-slate-700/60 pb-6 text-xs sm:text-sm font-semibold select-none">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className={`flex items-center gap-2 transition-colors ${step >= 1 ? "text-pink-500" : "text-zinc-500"}`}
-              >
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${step >= 1 ? "bg-pink-600 text-white" : "bg-slate-700 text-zinc-400"}`}>1</span>
-                <span>{lang === "ar" ? "الخامات والهيكل" : "Material & Shape"}</span>
-              </button>
-              <div className="w-8 h-[2px] bg-slate-700 flex-grow mx-4 hidden sm:block" />
-              <button
-                type="button"
-                onClick={() => { if (step > 1) setStep(2); }}
-                className={`flex items-center gap-2 transition-colors ${step >= 2 ? "text-pink-500" : "text-zinc-500"}`}
-              >
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${step >= 2 ? "bg-pink-600 text-white" : "bg-slate-700 text-zinc-400"}`}>2</span>
-                <span>{lang === "ar" ? "المقاسات والخيارات" : "Dimensions & Options"}</span>
-              </button>
-              <div className="w-8 h-[2px] bg-slate-700 flex-grow mx-4 hidden sm:block" />
-              <button
-                type="button"
-                onClick={() => { if (step > 2) setStep(3); }}
-                className={`flex items-center gap-2 transition-colors ${step >= 3 ? "text-pink-500" : "text-zinc-500"}`}
-              >
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${step >= 3 ? "bg-pink-600 text-white" : "bg-slate-700 text-zinc-400"}`}>3</span>
-                <span>{lang === "ar" ? "العميل والتسليم" : "Contact & Submit"}</span>
-              </button>
+
+            {/* Step Progress Bar */}
+            <div className="flex items-center gap-1 mb-10">
+              {STEPS.map((s, i) => {
+                const active = step === i + 1;
+                const done = step > i + 1;
+                const Icon = s.icon;
+                return (
+                  <React.Fragment key={i}>
+                    <button
+                      type="button"
+                      onClick={() => { if (done) setStep(i + 1); }}
+                      className={`flex flex-col items-center gap-1 transition-all flex-shrink-0 ${done ? "cursor-pointer" : "cursor-default"}`}
+                    >
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all ${active ? "bg-pink-600 border-pink-500 text-white scale-110" : done ? "bg-pink-600/30 border-pink-500/50 text-pink-400" : "bg-slate-700 border-slate-600 text-zinc-500"}`}>
+                        <Icon size={16} />
+                      </div>
+                      <span className={`text-[10px] font-bold hidden sm:block transition-colors ${active ? "text-pink-400" : done ? "text-pink-500/60" : "text-zinc-600"}`}>
+                        {lang === "ar" ? s.labelAr : s.labelEn}
+                      </span>
+                    </button>
+                    {i < STEPS.length - 1 && (
+                      <div className={`flex-grow h-0.5 rounded-full transition-colors mx-1 ${step > i + 1 ? "bg-pink-500/50" : "bg-slate-700"}`} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </div>
 
             <form onSubmit={handleSubmit}>
-              
-              {/* STEP 1: Material and Shapes (Visual cards with pictures!) */}
+
+              {/* ── STEP 1: Material Selection ── */}
               {step === 1 && (
-                <div className="space-y-8 animate-fade-in">
-                  
-                  {/* Visual Material Grid Cards */}
-                  <div className="flex flex-col gap-3">
-                    <label className="text-zinc-300 text-sm font-semibold flex items-center gap-1.5">
-                      <Layers size={16} className="text-pink-500" />
-                      <span>{lang === "ar" ? "اختر خامة المطبخ المفضلة (شاهد الصور):" : "Choose Material Finish (With Photos):"}</span>
-                    </label>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {materialOptions.map((item) => (
-                        <div
-                          key={item.id}
-                          onClick={() => setFormData((prev) => ({ ...prev, type: item.id }))}
-                          className={`relative rounded-xl overflow-hidden border cursor-pointer select-none transition-all duration-300 group flex items-center p-3 gap-3 ${
-                            formData.type === item.id
-                              ? "border-pink-500 bg-pink-500/[0.03] shadow-lg shadow-pink-500/5 scale-[1.01]"
-                              : "border-slate-700 bg-slate-900/60 hover:border-slate-500 text-zinc-300"
-                          }`}
-                        >
-                          {/* Small Square Image Box */}
-                          <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 border border-slate-800">
-                            <Image
-                              src={item.img}
-                              alt={lang === "ar" ? item.titleAr : item.titleEn}
-                              fill
-                              sizes="96px"
-                              className="object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                          </div>
+                <div className="space-y-5 animate-fade-in">
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-white mb-1">
+                      {lang === "ar" ? "اختر خامة المطبخ" : "Choose Cabinet Material"}
+                    </h3>
+                    <p className="text-zinc-500 text-xs mb-5">
+                      {lang === "ar" ? "كل خامة لها مظهر ومتانة وسعر مختلف — اختر الأنسب لك" : "Each finish has a unique look, durability and price point."}
+                    </p>
 
-                          {/* Content Box */}
-                          <div className="flex-grow min-w-0">
-                            <h4 className="text-xs sm:text-sm font-bold text-white mb-0.5">
-                              {lang === "ar" ? item.titleAr : item.titleEn}
-                            </h4>
-                            <p className="text-[10px] text-zinc-400 leading-relaxed line-clamp-2">
-                              {lang === "ar" ? item.descAr : item.descEn}
-                            </p>
-                          </div>
+                    <div className="grid grid-cols-1 gap-3">
+                      {materialOptions.map((item) => {
+                        const selected = formData.type === item.id;
+                        return (
+                          <div
+                            key={item.id}
+                            onClick={() => setFormData((prev) => ({ ...prev, type: item.id }))}
+                            className={`relative rounded-2xl overflow-hidden border cursor-pointer select-none transition-all duration-300 group flex items-stretch ${selected ? "border-pink-500 bg-pink-500/5 shadow-lg shadow-pink-500/10" : "border-slate-700 bg-slate-900/60 hover:border-slate-500"}`}
+                          >
+                            {/* Image */}
+                            <div className="relative w-28 sm:w-36 flex-shrink-0">
+                              <Image
+                                src={item.img}
+                                alt={lang === "ar" ? item.titleAr : item.titleEn}
+                                fill
+                                sizes="144px"
+                                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                              />
+                              {/* Selected overlay */}
+                              {selected && (
+                                <div className="absolute inset-0 bg-pink-600/20 flex items-center justify-center">
+                                  <div className="w-7 h-7 rounded-full bg-pink-600 flex items-center justify-center shadow-lg">
+                                    <svg viewBox="0 0 12 9" fill="none" className="w-3.5 h-3.5"><path d="M1 4.5L4.5 8L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
 
-                          {/* Radio Dot indicator */}
-                          <div className="flex-shrink-0 pt-0.5">
-                            <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center transition-colors ${
-                              formData.type === item.id ? "border-pink-500 bg-pink-600 text-white" : "border-slate-500"
-                            }`}>
-                              {formData.type === item.id && <div className="w-1 h-1 rounded-full bg-white" />}
+                            {/* Content */}
+                            <div className="flex-grow p-4 flex flex-col justify-between min-w-0">
+                              <div>
+                                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                                  <h4 className={`text-sm sm:text-base font-extrabold transition-colors ${selected ? "text-pink-400" : "text-white"}`}>
+                                    {lang === "ar" ? item.titleAr : item.titleEn}
+                                  </h4>
+                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${item.tierColorClass}`}>
+                                    {getTierLabel(item.tier, lang)}
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-zinc-500 font-semibold italic mb-2">
+                                  {lang === "ar" ? item.tagAr : item.tagEn}
+                                </p>
+                              </div>
+                              {/* Feature tags */}
+                              <div className="flex flex-wrap gap-1.5">
+                                {(lang === "ar" ? item.featuresAr : item.features).map((f) => (
+                                  <span key={f} className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${selected ? "bg-pink-600/20 text-pink-300" : "bg-slate-700 text-zinc-400"}`}>
+                                    {f}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
-
-                  {/* Visual Shape Grid Cards */}
-                  <div className="flex flex-col gap-3 pt-6 border-t border-slate-700/50">
-                    <label className="text-zinc-300 text-sm font-semibold flex items-center gap-1.5">
-                      <Maximize size={16} className="text-pink-500" />
-                      <span>{lang === "ar" ? "اختر مخطط شكل المطبخ الهيكلي:" : "Select Layout Shape Configuration:"}</span>
-                    </label>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                      {shapeOptions.map((item) => (
-                        <div
-                          key={item.id}
-                          onClick={() => setFormData((prev) => ({ ...prev, shape: item.id }))}
-                          className={`rounded-xl overflow-hidden border cursor-pointer select-none transition-all duration-300 flex flex-col justify-between group p-2 gap-2 text-center ${
-                            formData.shape === item.id
-                              ? "border-pink-500 bg-pink-500/[0.03] shadow-md shadow-pink-500/5"
-                              : "border-slate-700 bg-slate-900/60 hover:border-slate-500"
-                          }`}
-                        >
-                          {/* Image Box */}
-                          <div className="relative aspect-square w-full rounded-lg overflow-hidden border border-slate-800">
-                            <Image
-                              src={item.img}
-                              alt={lang === "ar" ? item.titleAr : item.titleEn}
-                              fill
-                              sizes="80px"
-                              className="object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 bg-black/20 group-hover:opacity-0 transition-opacity" />
-                          </div>
-
-                          <div className="pb-1 text-center flex items-center justify-center min-h-[28px]">
-                            <span className={`text-[10px] sm:text-xs font-bold transition-colors leading-tight ${
-                              formData.shape === item.id ? "text-pink-500 font-extrabold" : "text-zinc-300"
-                            }`}>
-                              {lang === "ar" ? catLabelAr(item.id) : catLabelEn(item.id)}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
                 </div>
               )}
 
-              {/* STEP 2: Sizes, Stone & Expanded custom Options (Height, Handles, Hardware) */}
+              {/* ── STEP 2: Layout Shape (SVG Diagrams) ── */}
               {step === 2 && (
+                <div className="space-y-5 animate-fade-in">
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-white mb-1">
+                      {lang === "ar" ? "اختر شكل مخطط المطبخ" : "Select Kitchen Layout Shape"}
+                    </h3>
+                    <p className="text-zinc-500 text-xs mb-6">
+                      {lang === "ar" ? "المخطط يحدد توزيع الوحدات ومساحة الحركة في مطبخك" : "The layout determines cabinet placement and flow inside your kitchen."}
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {shapeOptions.map((item) => {
+                        const selected = formData.shape === item.id;
+                        const SvgIcon = ShapeSVGs[item.id];
+                        return (
+                          <div
+                            key={item.id}
+                            onClick={() => setFormData((prev) => ({ ...prev, shape: item.id }))}
+                            className={`relative rounded-2xl border cursor-pointer select-none transition-all duration-300 group p-4 flex flex-col items-center gap-3 ${selected ? "border-pink-500 bg-pink-500/5 shadow-lg shadow-pink-500/10 scale-[1.02]" : "border-slate-700 bg-slate-900/60 hover:border-slate-500"}`}
+                          >
+                            {/* SVG Floor Plan */}
+                            <div className="w-full h-20 flex items-center justify-center px-4">
+                              <SvgIcon selected={selected} />
+                            </div>
+
+                            {/* Labels */}
+                            <div className="text-center w-full">
+                              <h4 className={`text-sm font-extrabold mb-1 transition-colors ${selected ? "text-pink-400" : "text-white"}`}>
+                                {lang === "ar" ? item.titleAr : item.titleEn}
+                              </h4>
+                              <p className="text-[11px] text-zinc-500 leading-tight">
+                                {lang === "ar" ? item.descAr : item.descEn}
+                              </p>
+                            </div>
+
+                            {/* Selected indicator */}
+                            {selected && (
+                              <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-pink-600 flex items-center justify-center shadow">
+                                <svg viewBox="0 0 12 9" fill="none" className="w-2.5 h-2.5"><path d="M1 4.5L4.5 8L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── STEP 3: Dimensions + Options + Live Price Preview ── */}
+              {step === 3 && (
                 <div className="space-y-6 animate-fade-in">
-                  
-                  {/* Dimensions Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-white mb-1">
+                      {lang === "ar" ? "المقاسات والخيارات الفنية" : "Dimensions & Technical Options"}
+                    </h3>
+                    <p className="text-zinc-500 text-xs mb-5">
+                      {lang === "ar" ? "أدخل مقاسات الغرفة واختر تفاصيل التشطيبات الداخلية" : "Enter room dimensions and configure interior finishes."}
+                    </p>
+                  </div>
+
+                  {/* Dimensions */}
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="width" className="text-zinc-300 text-xs font-semibold">
-                        {lang === "ar" ? "عرض جدار المطبخ الأساسي (بالمتر):" : "Primary Wall Width (meters):"}
+                        {lang === "ar" ? "عرض الجدار الرئيسي (م):" : "Main Wall Width (m):"}
                       </label>
-                      <input
-                        type="number"
-                        id="width"
-                        name="width"
-                        step="0.1"
-                        min="1"
-                        max="20"
-                        required
-                        value={formData.width}
-                        onChange={handleTextChange}
-                        className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all"
-                      />
+                      <input type="number" id="width" name="width" step="0.1" min="1" max="20" required value={formData.width} onChange={handleTextChange}
+                        className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all" />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="depth" className="text-zinc-300 text-xs font-semibold">
-                        {lang === "ar" ? "عمق أو الجدار الفرعي (بالمتر):" : "Sub Wall Depth (meters):"}
+                        {lang === "ar" ? "عرض الجدار الجانبي (م):" : "Side Wall Depth (m):"}
                       </label>
-                      <input
-                        type="number"
-                        id="depth"
-                        name="depth"
-                        step="0.1"
-                        min="0"
-                        max="20"
-                        required
-                        disabled={formData.shape === "straight"}
-                        value={formData.shape === "straight" ? "0" : formData.depth}
-                        onChange={handleTextChange}
-                        className="w-full bg-slate-900 border border-slate-700 disabled:opacity-40 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all"
-                      />
+                      <input type="number" id="depth" name="depth" step="0.1" min="0" max="20" required
+                        disabled={formData.shape === "straight"} value={formData.shape === "straight" ? "0" : formData.depth} onChange={handleTextChange}
+                        className="w-full bg-slate-900 border border-slate-700 disabled:opacity-40 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all" />
                     </div>
                   </div>
 
-                  {/* Expanded Custom Options Section */}
-                  <div className="border-t border-slate-700/40 pt-6 space-y-6">
-                    <h4 className="text-xs font-bold text-pink-500 uppercase tracking-wider flex items-center gap-1.5">
-                      <Settings size={14} />
-                      <span>{lang === "ar" ? "مواصفات التنسيق الفني:" : "Technical configuration specs:"}</span>
-                    </h4>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      
-                      {/* Height Select */}
-                      <div className="flex flex-col gap-1.5">
-                        <label htmlFor="height" className="text-zinc-300 text-xs font-semibold">
-                          {lang === "ar" ? "ارتفاع دواليب المطبخ:" : "Cabinet Height Setup:"}
-                        </label>
-                        <select
-                          id="height"
-                          name="height"
-                          value={formData.height}
-                          onChange={handleTextChange}
-                          className="w-full bg-slate-900 border border-slate-700 focus:border-pink-500 rounded-xl px-3 py-3 text-white text-xs sm:text-sm focus:outline-none transition-all cursor-pointer"
-                        >
-                          <option value="standard">{lang === "ar" ? "ارتفاع قياسي (220 سم)" : "Standard (220cm)"}</option>
-                          <option value="ceiling">{lang === "ar" ? "واصل للسقف (260 سم+)" : "Ceiling-High (260cm+)"}</option>
+                  {/* Config row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                      { id: "height", label: lang === "ar" ? "ارتفاع الخزائن:" : "Cabinet Height:", options: [{ v: "standard", l: lang === "ar" ? "قياسي (220سم)" : "Standard 220cm" }, { v: "ceiling", l: lang === "ar" ? "واصل للسقف (260سم+)" : "Ceiling-High 260cm+" }] },
+                      { id: "handles", label: lang === "ar" ? "نوع المقابض:" : "Handle Type:", options: [{ v: "gola", l: lang === "ar" ? "مجرى جولا مخفي" : "Hidden Gola" }, { v: "classic", l: lang === "ar" ? "مقابض بارزة" : "Classic Handles" }, { v: "push_open", l: lang === "ar" ? "فتح بالضغط (Tip-on)" : "Push-to-Open" }] },
+                      { id: "hardwareClass", label: lang === "ar" ? "فئة الأنظمة:" : "Hardware Grade:", options: [{ v: "smart_soft", l: lang === "ar" ? "هيدروليك صامت" : "Smart Soft-close" }, { v: "blum", l: lang === "ar" ? "بلوم نمساوي (Blum)" : "Premium Blum" }, { v: "basic", l: lang === "ar" ? "أساسي" : "Basic" }] },
+                    ].map((field) => (
+                      <div key={field.id} className="flex flex-col gap-1.5">
+                        <label htmlFor={field.id} className="text-zinc-300 text-xs font-semibold">{field.label}</label>
+                        <select id={field.id} name={field.id} value={(formData as unknown as Record<string, string>)[field.id]} onChange={handleTextChange}
+                          className="w-full bg-slate-900 border border-slate-700 focus:border-pink-500 rounded-xl px-3 py-3 text-white text-xs sm:text-sm focus:outline-none transition-all cursor-pointer">
+                          {field.options.map((o) => <option key={o.v} value={o.v}>{o.l}</option>)}
                         </select>
                       </div>
-
-                      {/* Handles Select */}
-                      <div className="flex flex-col gap-1.5">
-                        <label htmlFor="handles" className="text-zinc-300 text-xs font-semibold">
-                          {lang === "ar" ? "نوع مقابض الدرف:" : "Cabinet Handle Type:"}
-                        </label>
-                        <select
-                          id="handles"
-                          name="handles"
-                          value={formData.handles}
-                          onChange={handleTextChange}
-                          className="w-full bg-slate-900 border border-slate-700 focus:border-pink-500 rounded-xl px-3 py-3 text-white text-xs sm:text-sm focus:outline-none transition-all cursor-pointer"
-                        >
-                          <option value="gola">{lang === "ar" ? "مجرى ألومنيوم مخفي (Gola)" : "Hidden Gola Profile"}</option>
-                          <option value="classic">{lang === "ar" ? "مقابض بارزة كلاسيكية" : "Traditional Pull Handles"}</option>
-                          <option value="push_open">{lang === "ar" ? "فتح بالضغط باللمس (Tip-on)" : "Push-to-Open (Tip-on)"}</option>
-                        </select>
-                      </div>
-
-                      {/* Hardware Class Select */}
-                      <div className="flex flex-col gap-1.5">
-                        <label htmlFor="hardwareClass" className="text-zinc-300 text-xs font-semibold">
-                          {lang === "ar" ? "فئة المفصلات والأنظمة:" : "Hardware Brand Grade:"}
-                        </label>
-                        <select
-                          id="hardwareClass"
-                          name="hardwareClass"
-                          value={formData.hardwareClass}
-                          onChange={handleTextChange}
-                          className="w-full bg-slate-900 border border-slate-700 focus:border-pink-500 rounded-xl px-3 py-3 text-white text-xs sm:text-sm focus:outline-none transition-all cursor-pointer"
-                        >
-                          <option value="smart_soft">{lang === "ar" ? "هيدروليك ذكي صامت" : "Smart Silent Hydraulic"}</option>
-                          <option value="blum">{lang === "ar" ? "بلوم نمساوي فاخر (Blum)" : "Premium Austrian Blum"}</option>
-                          <option value="basic">{lang === "ar" ? "مفصلات هيدروليك أساسية" : "Basic soft-close"}</option>
-                        </select>
-                      </div>
-
-                    </div>
+                    ))}
                   </div>
 
-                  {/* Countertop surface select */}
-                  <div className="flex flex-col gap-2 pt-2 border-t border-slate-700/40">
-                    <label className="text-zinc-300 text-sm font-semibold">
-                      {lang === "ar" ? "نوع رخام / قرصة المطبخ:" : "Countertop surface material:"}
-                    </label>
+                  {/* Countertop */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-zinc-300 text-sm font-semibold">{lang === "ar" ? "رخام السطح العلوي (القرصة):" : "Countertop Surface:"}</label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {[
-                        { id: "quartz", labelAr: "كوارتز صناعي", labelEn: "Quartz" },
-                        { id: "granite", labelAr: "جرانيت مستورد", labelEn: "Imported Granite" },
-                        { id: "marble", labelAr: "رخام طبيعي", labelEn: "Natural Marble" },
-                        { id: "none", labelAr: "بدون رخام", labelEn: "None" },
-                      ].map((item) => (
-                        <div
-                          key={item.id}
-                          onClick={() => setFormData((prev) => ({ ...prev, countertop: item.id }))}
-                          className={`p-3 rounded-xl border text-center cursor-pointer select-none transition-all text-xs ${
-                            formData.countertop === item.id
-                              ? "bg-pink-600 border-pink-500 text-white font-bold"
-                              : "bg-slate-900 border-slate-700 hover:border-zinc-500 text-zinc-300"
-                          }`}
-                        >
-                          <span>{lang === "ar" ? item.labelAr : item.labelEn}</span>
+                      {[{ id: "quartz", ar: "كوارتز صناعي", en: "Quartz" }, { id: "granite", ar: "جرانيت", en: "Granite" }, { id: "marble", ar: "رخام طبيعي", en: "Marble" }, { id: "none", ar: "بدون رخام", en: "No Countertop" }].map((ct) => (
+                        <div key={ct.id} onClick={() => setFormData((p) => ({ ...p, countertop: ct.id }))}
+                          className={`p-3 rounded-xl border text-center cursor-pointer text-xs font-semibold transition-all ${formData.countertop === ct.id ? "bg-pink-600 border-pink-500 text-white" : "bg-slate-900 border-slate-700 hover:border-slate-500 text-zinc-300"}`}>
+                          {lang === "ar" ? ct.ar : ct.en}
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Smart items Checklist */}
-                  <div className="flex flex-col gap-2 pt-2 border-t border-slate-700/40">
-                    <label className="text-zinc-300 text-sm font-semibold">
-                      {lang === "ar" ? "إضافات وأنظمة تنظيم ذكية:" : "Cabinet Systems & Upgrades:"}
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                      {[
-                        { id: "cargo", labelAr: "وحدة كارجو طولية للبقوليات", labelEn: "Pantry Cargo Column" },
-                        { id: "led", labelAr: "إضاءة ليد بروفايل مدمجة", labelEn: "Cabinet LED Profiles" },
-                        { id: "builtin", labelAr: "تنسيق تجهيزات الأجهزة البلت-إن", labelEn: "Built-in Appliances Prep" },
-                      ].map((item) => (
-                        <label
-                          key={item.id}
-                          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all text-xs ${
-                            formData.accessories.includes(item.id)
-                              ? "bg-pink-600/10 border-pink-500 text-white"
-                              : "bg-slate-900 border-slate-700 hover:border-zinc-700 text-zinc-400"
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={formData.accessories.includes(item.id)}
-                            onChange={() => handleCheckboxChange(item.id)}
-                            className="rounded text-pink-600 focus:ring-pink-500 bg-slate-900 border-slate-700"
-                          />
-                          <span>{lang === "ar" ? item.labelAr : item.labelEn}</span>
+                  {/* Accessories */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-zinc-300 text-sm font-semibold">{lang === "ar" ? "إضافات وترقيات:" : "Upgrades & Accessories:"}</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {[{ id: "cargo", ar: "وحدة كارجو رأسية", en: "Pantry Cargo Column" }, { id: "led", ar: "إضاءة ليد بروفايل", en: "Cabinet LED Profiles" }, { id: "builtin", ar: "تجهيز أجهزة بلت-إن", en: "Built-in Appliances Prep" }].map((acc) => (
+                        <label key={acc.id} className={`flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer text-xs transition-all ${formData.accessories.includes(acc.id) ? "bg-pink-600/10 border-pink-500 text-white" : "bg-slate-900 border-slate-700 hover:border-slate-600 text-zinc-400"}`}>
+                          <input type="checkbox" checked={formData.accessories.includes(acc.id)} onChange={() => handleCheckboxChange(acc.id)}
+                            className="rounded text-pink-600 focus:ring-pink-500 bg-slate-900 border-slate-700 flex-shrink-0" />
+                          <span className="font-semibold">{lang === "ar" ? acc.ar : acc.en}</span>
                         </label>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* 🔴 Live Price Preview Bar */}
+                  <div className="bg-gradient-to-r from-pink-950/60 to-fuchsia-950/60 border border-pink-500/30 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="text-center sm:text-start">
+                      <p className="text-zinc-400 text-xs font-semibold mb-0.5">
+                        {lang === "ar" ? "التقدير الأولي المباشر (يتحدث تلقائياً):" : "Live Running Estimate (updates as you configure):"}
+                      </p>
+                      <p className="text-zinc-300 text-xs">~ {liveEstimate.meters} {lang === "ar" ? "متر طولي" : "running meters"}</p>
+                    </div>
+                    <div className="text-center">
+                      <span className="text-2xl sm:text-3xl font-extrabold text-pink-400 tracking-tight">
+                        {liveEstimate.min.toLocaleString()}
+                      </span>
+                      <span className="text-zinc-400 text-sm mx-1">–</span>
+                      <span className="text-2xl sm:text-3xl font-extrabold text-pink-400 tracking-tight">
+                        {liveEstimate.max.toLocaleString()}
+                      </span>
+                      <span className="text-zinc-400 text-xs ml-1">{lang === "ar" ? "ج.م" : "EGP"}</span>
                     </div>
                   </div>
 
                 </div>
               )}
 
-              {/* STEP 3: Contact & Send */}
-              {step === 3 && (
+              {/* ── STEP 4: Contact & Submit ── */}
+              {step === 4 && (
                 <div className="space-y-5 animate-fade-in">
-                  
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-white mb-1">
+                      {lang === "ar" ? "بيانات التواصل والإرسال" : "Contact Details & Submit"}
+                    </h3>
+                    <p className="text-zinc-500 text-xs mb-5">
+                      {lang === "ar" ? "ستُرسَل التفاصيل كاملةً مع التسعيرة التقديرية إلى واتساب المعرض مباشرةً." : "Your full specs and estimate will be sent directly to our WhatsApp."}
+                    </p>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label htmlFor="name" className="text-zinc-300 text-xs font-semibold">
-                        {lang === "ar" ? "الاسم الكامل للعميل:" : "Full Name:"}
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        required
-                        value={formData.name}
-                        onChange={handleTextChange}
-                        className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label htmlFor="phone" className="text-zinc-300 text-xs font-semibold">
-                        {lang === "ar" ? "رقم الهاتف / واتساب:" : "Phone / WhatsApp:"}
-                      </label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        required
-                        value={formData.phone}
-                        onChange={handleTextChange}
-                        className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all"
-                      />
-                    </div>
+                    {[{ id: "name", type: "text", ar: "الاسم الكامل:", en: "Full Name:" }, { id: "phone", type: "tel", ar: "رقم الهاتف / واتساب:", en: "Phone / WhatsApp:" }].map((f) => (
+                      <div key={f.id} className="flex flex-col gap-1.5">
+                        <label htmlFor={f.id} className="text-zinc-300 text-xs font-semibold">{lang === "ar" ? f.ar : f.en}</label>
+                        <input type={f.type} id={f.id} name={f.id} required value={(formData as unknown as Record<string, string>)[f.id]} onChange={handleTextChange}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all" />
+                      </div>
+                    ))}
                   </div>
 
                   <div className="flex flex-col gap-1.5">
                     <label htmlFor="location" className="text-zinc-300 text-xs font-semibold">
                       {lang === "ar" ? "المنطقة / العنوان (مثال: سموحة، الإسكندرية):" : "Area / Location (e.g. Smouha, Alexandria):"}
                     </label>
-                    <input
-                      type="text"
-                      id="location"
-                      name="location"
-                      required
-                      value={formData.location}
-                      onChange={handleTextChange}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all"
-                    />
+                    <input type="text" id="location" name="location" required value={formData.location} onChange={handleTextChange}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all" />
                   </div>
 
                   <div className="flex flex-col gap-1.5">
                     <label htmlFor="notes" className="text-zinc-300 text-xs font-semibold">
-                      {lang === "ar" ? "ملاحظات خاصة (أجهزة معينة، متطلبات تفصيلية):" : "Custom Notes (specific items, height requirements):"}
+                      {lang === "ar" ? "ملاحظات إضافية (اختياري):" : "Additional Notes (optional):"}
                     </label>
-                    <textarea
-                      id="notes"
-                      name="notes"
-                      rows={3}
-                      value={formData.notes}
-                      onChange={handleTextChange}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all resize-none"
-                    />
+                    <textarea id="notes" name="notes" rows={3} value={formData.notes} onChange={handleTextChange}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-pink-500 transition-all resize-none" />
                   </div>
 
+                  {/* Final summary mini card */}
+                  <div className="bg-slate-900/80 border border-slate-700 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+                    <div className="flex flex-col gap-1 text-zinc-400 text-xs">
+                      <span>📦 {materialOptions.find(m => m.id === formData.type)?.[lang === "ar" ? "titleAr" : "titleEn"]}</span>
+                      <span>📐 {shapeOptions.find(s => s.id === formData.shape)?.[lang === "ar" ? "titleAr" : "titleEn"]} · {formData.width}m × {formData.depth}m</span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-zinc-500 text-[10px]">{lang === "ar" ? "التقدير التقريبي" : "Price Range"}</p>
+                      <p className="text-pink-400 font-extrabold text-base">
+                        {liveEstimate.min.toLocaleString()} – {liveEstimate.max.toLocaleString()} {lang === "ar" ? "ج.م" : "EGP"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* Form Navigation Controls */}
+              {/* Navigation Controls */}
               <div className="flex items-center justify-between border-t border-slate-700/60 pt-6 mt-8">
                 {step > 1 ? (
-                  <button
-                    type="button"
-                    onClick={handleBack}
-                    className="flex items-center gap-1.5 bg-slate-700 hover:bg-slate-650 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition-all"
-                  >
+                  <button type="button" onClick={() => setStep((p) => p - 1)}
+                    className="flex items-center gap-1.5 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition-all">
                     <ChevronLeft size={16} className={lang === "ar" ? "rotate-180" : ""} />
                     <span>{lang === "ar" ? "السابق" : "Back"}</span>
                   </button>
-                ) : (
-                  <div />
-                )}
+                ) : <div />}
 
-                {step < 3 ? (
-                  <button
-                    type="button"
-                    onClick={handleNext}
-                    className="flex items-center gap-1.5 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition-all shadow-md"
-                  >
+                {step < 4 ? (
+                  <button type="button" onClick={() => setStep((p) => p + 1)}
+                    className="flex items-center gap-1.5 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition-all shadow-md shadow-pink-600/20">
                     <span>{lang === "ar" ? "التالي" : "Next"}</span>
                     <ChevronRight size={16} className={lang === "ar" ? "rotate-180" : ""} />
                   </button>
                 ) : (
-                  <button
-                    type="submit"
-                    className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-3.5 px-8 rounded-xl cursor-pointer transition-all shadow-lg hover:shadow-emerald-500/20"
-                  >
+                  <button type="submit"
+                    className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-3.5 px-8 rounded-xl cursor-pointer transition-all shadow-lg shadow-emerald-500/20">
                     <Calculator size={18} />
-                    <span>{lang === "ar" ? "احسب السعر وأرسل الطلب" : "Calculate & Request Quote"}</span>
+                    <span>{lang === "ar" ? "احسب وأرسل الطلب على واتساب" : "Get Quote on WhatsApp"}</span>
                     <Send size={14} className={lang === "ar" ? "rotate-180" : ""} />
                   </button>
                 )}
@@ -834,25 +681,9 @@ export default function QuotationForm() {
             </form>
           </div>
         )}
-
       </div>
     </section>
   );
 }
 
-// Helpers for localized shape tags
-function catLabelAr(shape: string) {
-  if (shape === "straight") return "جدار مستقيم";
-  if (shape === "parallel") return "ممر موازي";
-  if (shape === "l_shape") return "شكل L زاوي";
-  if (shape === "u_shape") return "شكل U متكامل";
-  return "جزيرة وسطية";
-}
-
-function catLabelEn(shape: string) {
-  if (shape === "straight") return "Straight";
-  if (shape === "parallel") return "Parallel";
-  if (shape === "l_shape") return "L-Shape";
-  if (shape === "u_shape") return "U-Shape";
-  return "With Island";
-}
+// ─── Helpers ─────────────────────────────────────────────────────────────────
