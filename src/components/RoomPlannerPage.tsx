@@ -21,13 +21,25 @@ import {
   Printer,
   Undo2,
   Trash2,
+  Check,
 } from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type RoomShape = "rectangle" | "lShape" | "uShape" | "galley" | "island" | "gShape" | "custom";
-type CabinetFinish = "modern-gloss-grey" | "modern-matte-white" | "modern-sage-green" | "classic-oak" | "classic-walnut";
-type CountertopStone = "white-marble" | "black-granite" | "grey-quartz";
+type CabinetFinish = 
+  | "modern-gloss-grey" 
+  | "modern-matte-white" 
+  | "modern-sage-green" 
+  | "modern-navy-blue" 
+  | "modern-forest-green" 
+  | "modern-charcoal" 
+  | "classic-oak" 
+  | "classic-walnut";
+
+type CountertopStone = "white-marble" | "calacatta-gold" | "black-granite" | "grey-quartz" | "concrete-grey";
 type HandleStyle = "modern-chrome" | "classic-gold" | "handleless";
+type FloorMaterial = "parquet-oak" | "marble-tiles" | "concrete-grey";
+type WallMaterial = "off-white" | "exposed-brick" | "dark-charcoal";
 type Point2D = { x: number; y: number };
 
 type LayoutSuggestion = {
@@ -68,7 +80,7 @@ const ALL_LAYOUTS: LayoutSuggestion[] = [
     cabinetsFn: (w) => Math.floor(w / 0.6) + 2,
     workTriangle: "fair",
     tags: ["Compact", "Modern", "Efficient"],
-    tagsAr: ["مضغوط", "مودرن", "فعّال"],
+    tagsAr: ["مضغوط", "مستقل", "فعّال"],
     pros: ["Easy to clean", "Maximum open floor space", "Perfect for small dimensions"],
     prosAr: ["سهل التنظيف", "أقصى مساحة للأرضية", "مثالي للمساحات الصغيرة"],
   },
@@ -203,26 +215,114 @@ function createWoodTexture(baseColor: string, grainColor: string): THREE.Texture
 }
 
 // ── Procedural Marble Texture Generator ───────────────────────────────────
-function createMarbleTexture(): THREE.Texture {
+function createMarbleTexture(veinColor = "rgba(100, 116, 139, 0.15)"): THREE.Texture {
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;
   const ctx = canvas.getContext("2d")!;
   const grad = ctx.createLinearGradient(0, 0, 512, 512);
   grad.addColorStop(0, "#ffffff");
-  grad.addColorStop(1, "#f1f5f9");
+  grad.addColorStop(1, "#f8fafc");
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, 512, 512);
   
-  ctx.strokeStyle = "rgba(100, 116, 139, 0.15)";
+  ctx.strokeStyle = veinColor;
   ctx.lineWidth = 1.5;
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 6; i++) {
     ctx.beginPath();
     ctx.moveTo(Math.random() * 512, 0);
-    ctx.lineTo(Math.random() * 512, 512);
+    ctx.bezierCurveTo(
+      Math.random() * 512, 170,
+      Math.random() * 512, 340,
+      Math.random() * 512, 512
+    );
     ctx.stroke();
   }
   return new THREE.CanvasTexture(canvas);
+}
+
+// ── Procedural Brick Wall Texture ─────────────────────────────────────────
+function createBrickTexture(): THREE.Texture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = "#b45309"; // brick rustic orange
+  ctx.fillRect(0, 0, 256, 256);
+  ctx.strokeStyle = "#e2e8f0"; // mortar
+  ctx.lineWidth = 2.5;
+  for (let y = 0; y <= 256; y += 32) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(256, y);
+    ctx.stroke();
+    const offset = (y / 32) % 2 === 0 ? 0 : 32;
+    for (let x = offset; x < 256 + 64; x += 64) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, y + 32);
+      ctx.stroke();
+    }
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(3, 2);
+  return texture;
+}
+
+// ── Procedural Herringbone Parquet Floor ──────────────────────────────────
+function createParquetTexture(): THREE.Texture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = "#b45309"; // Warm golden oak base
+  ctx.fillRect(0, 0, 256, 256);
+  ctx.strokeStyle = "#451a03"; // Dark plank grooves
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 256; i += 32) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, 256);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, i);
+    ctx.lineTo(256, i);
+    ctx.stroke();
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(4, 4);
+  return texture;
+}
+
+// ── Procedural Grout Ceramic Floor Tiles ──────────────────────────────────
+function createTilesFloorTexture(): THREE.Texture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = "#f1f5f9"; // light grey ceramic tiles
+  ctx.fillRect(0, 0, 256, 256);
+  ctx.strokeStyle = "#cbd5e1"; // grout
+  ctx.lineWidth = 3;
+  for (let i = 0; i <= 256; i += 64) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, 256);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, i);
+    ctx.lineTo(256, i);
+    ctx.stroke();
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(5, 5);
+  return texture;
 }
 
 // ── Room Planner Page Component ───────────────────────────────────────────
@@ -249,9 +349,16 @@ export default function RoomPlannerPage() {
   const [activeFinish, setActiveFinish] = useState<CabinetFinish>("modern-gloss-grey");
   const [activeStone, setActiveStone] = useState<CountertopStone>("white-marble");
   const [activeHandle, setActiveHandle] = useState<HandleStyle>("modern-chrome");
+  const [floorType, setFloorType] = useState<FloorMaterial>("parquet-oak");
+  const [wallType, setWallType] = useState<WallMaterial>("off-white");
   const [isLedActive, setIsLedActive] = useState(true);
   const [ledColor, setLedColor] = useState("#fff4e0");
   const [timeOfDay, setTimeOfDay] = useState<number>(12.0); // 6.0 to 22.0
+
+  // Appliance toggles states
+  const [hasFridge, setHasFridge] = useState(true);
+  const [hasOvenTower, setHasOvenTower] = useState(true);
+  const [hasSink, setHasSink] = useState(true);
 
   // ── WebGL References ─────────────────────────────────────────────────────
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -263,17 +370,29 @@ export default function RoomPlannerPage() {
   const activeFinishRef = useRef<CabinetFinish>(activeFinish);
   const activeStoneRef = useRef<CountertopStone>(activeStone);
   const activeHandleRef = useRef<HandleStyle>(activeHandle);
+  const activeFloorRef = useRef<FloorMaterial>(floorType);
+  const activeWallRef = useRef<WallMaterial>(wallType);
   const isLedActiveRef = useRef<boolean>(isLedActive);
   const ledColorRef = useRef<string>(ledColor);
   const timeOfDayRef = useRef<number>(timeOfDay);
+
+  const hasFridgeRef = useRef(hasFridge);
+  const hasOvenTowerRef = useRef(hasOvenTower);
+  const hasSinkRef = useRef(hasSink);
 
   useEffect(() => { activeLayoutRef.current = selectedLayout; }, [selectedLayout]);
   useEffect(() => { activeFinishRef.current = activeFinish; }, [activeFinish]);
   useEffect(() => { activeStoneRef.current = activeStone; }, [activeStone]);
   useEffect(() => { activeHandleRef.current = activeHandle; }, [activeHandle]);
+  useEffect(() => { activeFloorRef.current = floorType; }, [floorType]);
+  useEffect(() => { activeWallRef.current = wallType; }, [wallType]);
   useEffect(() => { isLedActiveRef.current = isLedActive; }, [isLedActive]);
   useEffect(() => { ledColorRef.current = ledColor; }, [ledColor]);
   useEffect(() => { timeOfDayRef.current = timeOfDay; }, [timeOfDay]);
+
+  useEffect(() => { hasFridgeRef.current = hasFridge; }, [hasFridge]);
+  useEffect(() => { hasOvenTowerRef.current = hasOvenTower; }, [hasOvenTower]);
+  useEffect(() => { hasSinkRef.current = hasSink; }, [hasSink]);
 
   // ── Shape Classification Engine ──────────────────────────────────────────
   const classifyPolygonShape = (pts: Point2D[], wM: number, hM: number): RoomShape => {
@@ -289,7 +408,7 @@ export default function RoomPlannerPage() {
     }
     area = Math.abs(area) * 0.5;
 
-    const bboxArea = (wM * 30) * (hM * 30); // scale back to pixels
+    const bboxArea = (wM * 30) * (hM * 30);
     const ratio = area / bboxArea;
 
     if (ratio > 0.88) return "rectangle";
@@ -303,7 +422,6 @@ export default function RoomPlannerPage() {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    // Snap to nearest 15px grid intersection
     const snap = 15;
     return {
       x: Math.round(x / snap) * snap,
@@ -315,43 +433,44 @@ export default function RoomPlannerPage() {
     if (isDrawingClosed) return;
     const pt = getCanvasCoords(e);
     
-    // Check if clicking close to the starting point to close the path
     if (drawingPoints.length >= 3) {
       const start = drawingPoints[0];
       const dist = Math.hypot(pt.x - start.x, pt.y - start.y);
       if (dist < 20) {
-        setIsDrawingClosed(true);
-        // Calculate bounding dimensions
-        const xs = drawingPoints.map((p) => p.x);
-        const ys = drawingPoints.map((p) => p.y);
-        const minX = Math.min(...xs);
-        const maxX = Math.max(...xs);
-        const minY = Math.min(...ys);
-        const maxY = Math.max(...ys);
-        
-        // Scale: 30px = 1 meter
-        const calculatedWidth = +((maxX - minX) / 30).toFixed(1);
-        const calculatedDepth = +((maxY - minY) / 30).toFixed(1);
-        
-        const wVal = Math.max(1.5, Math.min(12, calculatedWidth));
-        const dVal = Math.max(1.5, Math.min(12, calculatedDepth));
-        
-        setWidth(wVal.toString());
-        setDepth(dVal.toString());
-
-        // Classify shape dynamically
-        const detectedShape = classifyPolygonShape(drawingPoints, wVal, dVal);
-        setSelectedShape(detectedShape);
-
-        // Auto generate layout suggestions and load 3D visualizer
-        const results = getLayoutsForShape(detectedShape, wVal, dVal);
-        setSuggestions(results);
-        setSelectedLayout(results[0]);
-        setStep(3);
+        handleAutoClose();
         return;
       }
     }
     setDrawingPoints((prev) => [...prev, pt]);
+  };
+
+  const handleAutoClose = () => {
+    if (drawingPoints.length < 3 || isDrawingClosed) return;
+    setIsDrawingClosed(true);
+    
+    const xs = drawingPoints.map((p) => p.x);
+    const ys = drawingPoints.map((p) => p.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    
+    const calculatedWidth = +((maxX - minX) / 30).toFixed(1);
+    const calculatedDepth = +((maxY - minY) / 30).toFixed(1);
+    
+    const wVal = Math.max(1.5, Math.min(12, calculatedWidth));
+    const dVal = Math.max(1.5, Math.min(12, calculatedDepth));
+    
+    setWidth(wVal.toString());
+    setDepth(dVal.toString());
+
+    const detectedShape = classifyPolygonShape(drawingPoints, wVal, dVal);
+    setSelectedShape(detectedShape);
+
+    const results = getLayoutsForShape(detectedShape, wVal, dVal);
+    setSuggestions(results);
+    setSelectedLayout(results[0]);
+    setStep(3);
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
@@ -450,20 +569,22 @@ export default function RoomPlannerPage() {
     const roomGroup = new THREE.Group();
     scene.add(roomGroup);
 
-    const floorMat = new THREE.MeshStandardMaterial({ color: "#f1f5f9", roughness: 0.9 });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1.2;
-    floor.receiveShadow = true;
-    roomGroup.add(floor);
+    // Floor Mesh Setup
+    const floorGeo = new THREE.PlaneGeometry(12, 12);
+    const floorMesh = new THREE.Mesh(floorGeo, new THREE.MeshStandardMaterial({ roughness: 0.8 }));
+    floorMesh.rotation.x = -Math.PI / 2;
+    floorMesh.position.y = -1.2;
+    floorMesh.receiveShadow = true;
+    roomGroup.add(floorMesh);
 
-    const wallMat = new THREE.MeshStandardMaterial({ color: "#f8fafc", roughness: 0.9 });
-    const wallBack = new THREE.Mesh(new THREE.PlaneGeometry(8, 3), wallMat);
-    wallBack.position.set(0, 0.3, -4);
-    wallBack.receiveShadow = true;
-    roomGroup.add(wallBack);
+    // Wall Mesh Setup
+    const wallGeo = new THREE.PlaneGeometry(12, 4);
+    const wallMesh = new THREE.Mesh(wallGeo, new THREE.MeshStandardMaterial({ roughness: 0.9 }));
+    wallMesh.position.set(0, 0.8, -4);
+    wallMesh.receiveShadow = true;
+    roomGroup.add(wallMesh);
 
-    const ambientLight = new THREE.AmbientLight("#f8fafc", 0.9);
+    const ambientLight = new THREE.AmbientLight("#ffffff", 0.85);
     scene.add(ambientLight);
 
     const sunLight = new THREE.DirectionalLight("#fffaf0", 2.2);
@@ -472,8 +593,8 @@ export default function RoomPlannerPage() {
     sunLight.shadow.bias = -0.0015;
     scene.add(sunLight);
 
-    const spotLight = new THREE.SpotLight("#ffffff", 4);
-    spotLight.position.set(0, 2.5, 0);
+    const spotLight = new THREE.SpotLight("#ffffff", 3);
+    spotLight.position.set(0, 2.5, -1);
     spotLight.angle = Math.PI / 3;
     spotLight.castShadow = true;
     scene.add(spotLight);
@@ -485,32 +606,50 @@ export default function RoomPlannerPage() {
     const chromeMat = new THREE.MeshStandardMaterial({ color: "#cccccc", metalness: 0.9, roughness: 0.1 });
     const handleGoldMat = new THREE.MeshStandardMaterial({ color: "#d4af37", metalness: 0.95, roughness: 0.15 });
     const blackGlassMat = new THREE.MeshStandardMaterial({ color: "#111111", roughness: 0.05, metalness: 0.9 });
+    const applianceSteelMat = new THREE.MeshStandardMaterial({ color: "#e2e8f0", metalness: 0.85, roughness: 0.2 });
 
+    // Wood / Matte textures
+    const oakTex = createWoodTexture("#cfa771", "#7e623d");
+    const walnutTex = createWoodTexture("#7a5933", "#3f2d1e");
+    
+    // Cabinet Materials Dictionary
     const cabinetMaterials = {
       "modern-gloss-grey": new THREE.MeshStandardMaterial({ color: "#475569", roughness: 0.05, metalness: 0.1 }),
       "modern-matte-white": new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.85, metalness: 0.05 }),
-      "modern-sage-green": new THREE.MeshStandardMaterial({ color: "#607264", roughness: 0.7, metalness: 0.05 }),
-      "classic-oak": new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0.1 }),
-      "classic-walnut": new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.1 }),
+      "modern-sage-green": new THREE.MeshStandardMaterial({ color: "#607264", roughness: 0.75, metalness: 0.05 }),
+      "modern-navy-blue": new THREE.MeshStandardMaterial({ color: "#1e293b", roughness: 0.75, metalness: 0.1 }),
+      "modern-forest-green": new THREE.MeshStandardMaterial({ color: "#14532d", roughness: 0.8, metalness: 0.05 }),
+      "modern-charcoal": new THREE.MeshStandardMaterial({ color: "#18181b", roughness: 0.7, metalness: 0.1 }),
+      "classic-oak": new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0.1, map: oakTex }),
+      "classic-walnut": new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.1, map: walnutTex }),
     };
 
-    const oakTex = createWoodTexture("#cfa771", "#7e623d");
-    const walnutTex = createWoodTexture("#7a5933", "#3f2d1e");
-    cabinetMaterials["classic-oak"].map = oakTex;
-    cabinetMaterials["classic-walnut"].map = walnutTex;
-
+    // Countertop Stone Dictionary
     const stoneMaterials = {
-      "white-marble": new THREE.MeshStandardMaterial({ roughness: 0.1, metalness: 0.1 }),
+      "white-marble": new THREE.MeshStandardMaterial({ roughness: 0.1, metalness: 0.1, map: createMarbleTexture("rgba(100, 116, 139, 0.15)") }),
+      "calacatta-gold": new THREE.MeshStandardMaterial({ roughness: 0.08, metalness: 0.1, map: createMarbleTexture("rgba(180, 140, 60, 0.28)") }),
       "black-granite": new THREE.MeshStandardMaterial({ color: "#1a1a1a", roughness: 0.12, metalness: 0.15 }),
       "grey-quartz": new THREE.MeshStandardMaterial({ color: "#64748b", roughness: 0.22, metalness: 0.05 }),
+      "concrete-grey": new THREE.MeshStandardMaterial({ color: "#78716c", roughness: 0.6, metalness: 0.1 }),
     };
-    const marbleTex = createMarbleTexture();
-    stoneMaterials["white-marble"].map = marbleTex;
+
+    // Procedural Floor/Wall textures
+    const floorTextures = {
+      "parquet-oak": createParquetTexture(),
+      "marble-tiles": createTilesFloorTexture(),
+      "concrete-grey": new THREE.Texture(), // base solid
+    };
+    const wallTextures = {
+      "off-white": new THREE.Texture(),
+      "exposed-brick": createBrickTexture(),
+      "dark-charcoal": new THREE.Texture(),
+    };
 
     const cabinetGroup = new THREE.Group();
     roomGroup.add(cabinetGroup);
 
-    const buildCabinetModule = (x: number, y: number, z: number, isUpper = false) => {
+    // Cabinet component builder
+    const buildCabinetModule = (x: number, y: number, z: number, isUpper = false, isApplianceType: "none" | "oven" | "sink" = "none") => {
       const widthMod = 0.6;
       const heightMod = isUpper ? 0.7 : 0.85;
       const depthMod = isUpper ? 0.35 : 0.6;
@@ -525,25 +664,59 @@ export default function RoomPlannerPage() {
       const meshGroup = new THREE.Group();
       meshGroup.position.set(x, y, z);
 
-      const body = new THREE.Mesh(new THREE.BoxGeometry(widthMod - 0.01, heightMod, depthMod), cabMat);
-      body.castShadow = true;
-      body.receiveShadow = true;
-      meshGroup.add(body);
+      if (isApplianceType === "oven" && !isUpper) {
+        // Renders an Oven tower tall unit
+        const tallBody = new THREE.Mesh(new THREE.BoxGeometry(widthMod - 0.01, 2.2, depthMod), cabMat);
+        tallBody.position.y = 0.67;
+        tallBody.castShadow = true;
+        tallBody.receiveShadow = true;
+        meshGroup.add(tallBody);
 
-      if (handleKey !== "handleless") {
-        const handleMat = handleKey === "classic-gold" ? handleGoldMat : chromeMat;
-        const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.15), handleMat);
-        handle.rotation.z = Math.PI / 2;
-        handle.position.set(0, isUpper ? -0.25 : 0.3, depthMod / 2 + 0.01);
-        meshGroup.add(handle);
-      }
+        // Black glass oven insert
+        const oven = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.55, 0.02), blackGlassMat);
+        oven.position.set(0, 0.4, depthMod / 2 + 0.01);
+        meshGroup.add(oven);
 
-      if (!isUpper) {
-        const slab = new THREE.Mesh(new THREE.BoxGeometry(widthMod, 0.04, depthMod + 0.02), counterMat);
-        slab.position.y = heightMod / 2 + 0.02;
-        slab.castShadow = true;
-        slab.receiveShadow = true;
-        meshGroup.add(slab);
+        // Stainless steel handle bar
+        const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.4), chromeMat);
+        bar.rotation.z = Math.PI / 2;
+        bar.position.set(0, 0.6, depthMod / 2 + 0.03);
+        meshGroup.add(bar);
+      } else {
+        // Renders standard cabinet box
+        const body = new THREE.Mesh(new THREE.BoxGeometry(widthMod - 0.01, heightMod, depthMod), cabMat);
+        body.castShadow = true;
+        body.receiveShadow = true;
+        meshGroup.add(body);
+
+        // Handles
+        if (handleKey !== "handleless") {
+          const handleMat = handleKey === "classic-gold" ? handleGoldMat : chromeMat;
+          const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.15), handleMat);
+          handle.rotation.z = Math.PI / 2;
+          handle.position.set(0, isUpper ? -0.25 : 0.3, depthMod / 2 + 0.01);
+          meshGroup.add(handle);
+        }
+
+        // Countertop
+        if (!isUpper) {
+          const slab = new THREE.Mesh(new THREE.BoxGeometry(widthMod, 0.04, depthMod + 0.02), counterMat);
+          slab.position.y = heightMod / 2 + 0.02;
+          slab.castShadow = true;
+          slab.receiveShadow = true;
+          meshGroup.add(slab);
+
+          // Add steel sink insert
+          if (isApplianceType === "sink") {
+            const sinkUnit = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.01, 0.35), chromeMat);
+            sinkUnit.position.set(0, heightMod / 2 + 0.042, 0);
+            meshGroup.add(sinkUnit);
+
+            const faucet = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.15), chromeMat);
+            faucet.position.set(0, heightMod / 2 + 0.12, -0.12);
+            meshGroup.add(faucet);
+          }
+        }
       }
 
       cabinetGroup.add(meshGroup);
@@ -559,53 +732,93 @@ export default function RoomPlannerPage() {
       if (!activeLayout) return;
 
       const id = activeLayout.id;
+      const showFridge = hasFridgeRef.current;
+      const showOvenTower = hasOvenTowerRef.current;
+      const showSink = hasSinkRef.current;
+
+      // Standalone Refrigerator block
+      if (showFridge) {
+        const fridgeGroup = new THREE.Group();
+        fridgeGroup.position.set(-2.4, -0.3, -3.5);
+        const fBody = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.8, 0.7), applianceSteelMat);
+        fBody.castShadow = true;
+        fridgeGroup.add(fBody);
+
+        const fGlass = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.8, 0.2), blackGlassMat);
+        fGlass.position.set(0.36, 0.3, 0);
+        fridgeGroup.add(fGlass);
+        cabinetGroup.add(fridgeGroup);
+      }
 
       if (id === "single-wall") {
+        let idx = 0;
         for (let x = -1.8; x <= 1.8; x += 0.6) {
-          buildCabinetModule(x, -0.77, -3.6, false);
-          buildCabinetModule(x, 0.45, -3.6, true);
+          const type = (idx === 1 && showSink) ? "sink" : (idx === 4 && showOvenTower) ? "oven" : "none";
+          buildCabinetModule(x, -0.77, -3.6, false, type);
+          if (type !== "oven") {
+            buildCabinetModule(x, 0.45, -3.6, true);
+          }
+          idx++;
         }
       } else if (id === "galley") {
+        let idx = 0;
         for (let x = -1.8; x <= 1.8; x += 0.6) {
-          buildCabinetModule(x, -0.77, -3.6, false);
-          buildCabinetModule(x, -0.77, -1.6, false);
+          const type = (idx === 1 && showSink) ? "sink" : "none";
+          buildCabinetModule(x, -0.77, -3.6, false, type);
+          buildCabinetModule(x, -0.77, -1.6, false, (idx === 3 && showOvenTower) ? "oven" : "none");
+          idx++;
         }
       } else if (id === "l-shape") {
+        let idx = 0;
         for (let x = -1.8; x <= 1.8; x += 0.6) {
-          buildCabinetModule(x, -0.77, -3.6, false);
+          const type = (idx === 1 && showSink) ? "sink" : "none";
+          buildCabinetModule(x, -0.77, -3.6, false, type);
           buildCabinetModule(x, 0.45, -3.6, true);
+          idx++;
         }
+        let zIdx = 0;
         for (let z = -3.0; z <= -1.2; z += 0.6) {
-          buildCabinetModule(1.8, -0.77, z, false);
+          buildCabinetModule(1.8, -0.77, z, false, (zIdx === 1 && showOvenTower) ? "oven" : "none");
+          zIdx++;
         }
       } else if (id === "u-shape") {
+        let idx = 0;
         for (let x = -1.8; x <= 1.8; x += 0.6) {
-          buildCabinetModule(x, -0.77, -3.6, false);
+          buildCabinetModule(x, -0.77, -3.6, false, (idx === 3 && showSink) ? "sink" : "none");
           buildCabinetModule(x, 0.45, -3.6, true);
+          idx++;
         }
         for (let z = -3.0; z <= -1.2; z += 0.6) {
           buildCabinetModule(-1.8, -0.77, z, false);
         }
+        let zIdx = 0;
         for (let z = -3.0; z <= -1.2; z += 0.6) {
-          buildCabinetModule(1.8, -0.77, z, false);
+          buildCabinetModule(1.8, -0.77, z, false, (zIdx === 1 && showOvenTower) ? "oven" : "none");
+          zIdx++;
         }
       } else if (id === "island") {
+        let idx = 0;
         for (let x = -1.8; x <= 1.8; x += 0.6) {
-          buildCabinetModule(x, -0.77, -3.6, false);
-          buildCabinetModule(x, 0.45, -3.6, true);
+          buildCabinetModule(x, -0.77, -3.6, false, (idx === 4 && showOvenTower) ? "oven" : "none");
+          if (idx !== 4) buildCabinetModule(x, 0.45, -3.6, true);
+          idx++;
         }
         for (let x = -0.6; x <= 0.6; x += 0.6) {
-          buildCabinetModule(x, -0.77, -1.8, false);
+          buildCabinetModule(x, -0.77, -1.8, false, (x === 0 && showSink) ? "sink" : "none");
         }
       } else if (id === "g-shape") {
+        let idx = 0;
         for (let x = -1.8; x <= 1.8; x += 0.6) {
-          buildCabinetModule(x, -0.77, -3.6, false);
+          buildCabinetModule(x, -0.77, -3.6, false, (idx === 2 && showSink) ? "sink" : "none");
+          idx++;
         }
         for (let z = -3.0; z <= -1.2; z += 0.6) {
           buildCabinetModule(-1.8, -0.77, z, false);
         }
+        let zIdx = 0;
         for (let z = -3.0; z <= -1.2; z += 0.6) {
-          buildCabinetModule(1.8, -0.77, z, false);
+          buildCabinetModule(1.8, -0.77, z, false, (zIdx === 1 && showOvenTower) ? "oven" : "none");
+          zIdx++;
         }
         for (let x = -0.6; x <= 0.6; x += 0.6) {
           buildCabinetModule(x, -0.77, -0.6, false);
@@ -619,14 +832,36 @@ export default function RoomPlannerPage() {
     const tick = () => {
       const elapsed = clock.getElapsedTime();
 
-      camera.position.x = Math.sin(elapsed * 0.1) * 3.8;
-      camera.position.z = Math.cos(elapsed * 0.1) * 3.8 + 1;
-      camera.lookAt(0, -0.2, -2.6);
+      // Slow camera auto rotation orbiting the kitchen
+      camera.position.x = Math.sin(elapsed * 0.08) * 3.8;
+      camera.position.z = Math.cos(elapsed * 0.08) * 3.8 + 1;
+      camera.lookAt(0, -0.15, -2.6);
 
+      // Floor Type Switch
+      const activeF = activeFloorRef.current;
+      if (activeF === "concrete-grey") {
+        floorMesh.material = new THREE.MeshStandardMaterial({ color: "#78716c", roughness: 0.65 });
+      } else {
+        const floorMat = new THREE.MeshStandardMaterial({ map: floorTextures[activeF], roughness: 0.4 });
+        floorMesh.material = floorMat;
+      }
+
+      // Wall Type Switch
+      const activeW = activeWallRef.current;
+      if (activeW === "exposed-brick") {
+        wallMesh.material = new THREE.MeshStandardMaterial({ map: wallTextures["exposed-brick"], roughness: 0.95 });
+      } else if (activeW === "dark-charcoal") {
+        wallMesh.material = new THREE.MeshStandardMaterial({ color: "#18181b", roughness: 0.85 });
+      } else {
+        wallMesh.material = new THREE.MeshStandardMaterial({ color: "#f8fafc", roughness: 0.9 });
+      }
+
+      // LED strip intensity
       const ledActive = isLedActiveRef.current;
       ledLight.intensity = ledActive ? 3.5 : 0;
       ledLight.color.set(ledColorRef.current);
 
+      // Sunlight Tracing time-of-day
       const hrs = timeOfDayRef.current;
       let targetSunIntensity = 2.2;
       let targetSunColor = new THREE.Color("#fffaf0");
@@ -663,22 +898,27 @@ export default function RoomPlannerPage() {
     return () => {
       cancelAnimationFrame(reqId);
       resizeObserver.disconnect();
-      floorMat.dispose();
-      wallMat.dispose();
+      floorMesh.geometry.dispose();
+      (floorMesh.material as THREE.Material).dispose();
+      wallMesh.geometry.dispose();
+      (wallMesh.material as THREE.Material).dispose();
       chromeMat.dispose();
       handleGoldMat.dispose();
       blackGlassMat.dispose();
+      applianceSteelMat.dispose();
       oakTex.dispose();
       walnutTex.dispose();
-      marbleTex.dispose();
       Object.values(cabinetMaterials).forEach((m) => m.dispose());
       Object.values(stoneMaterials).forEach((m) => m.dispose());
+      Object.values(floorTextures).forEach((t) => t.dispose());
+      Object.values(wallTextures).forEach((t) => t.dispose());
       renderer.dispose();
     };
   }, [width, depth]);
 
   const wVal = parseFloat(width) || 4;
   const dVal = parseFloat(depth) || 3.5;
+  const roomArea = wVal * dVal;
 
   return (
     <>
@@ -724,7 +964,7 @@ export default function RoomPlannerPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-stretch">
 
-            {/* ── Left Column: Controls (Span 4) ── */}
+            {/* ── Left Column: Controls ── */}
             <div className="xl:col-span-4 flex flex-col gap-6 print:hidden">
 
               {/* Step 1 – Shape & Custom Draw */}
@@ -770,12 +1010,20 @@ export default function RoomPlannerPage() {
                 </div>
               </div>
 
-              {/* Freehand Interactive Drawing Canvas (rendered only when custom shape is active) */}
+              {/* Freehand Interactive Drawing Canvas */}
               {selectedShape === "custom" && (
                 <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-xs font-bold text-slate-800">{isRTL ? "لوحة الرسم الحر 2D" : "2D Sketching Board"}</h3>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={handleAutoClose}
+                        disabled={drawingPoints.length < 3 || isDrawingClosed}
+                        className="px-2 py-1 rounded-lg border border-pink-200 bg-pink-50 hover:bg-pink-100 text-pink-600 text-[10px] font-bold disabled:opacity-40 cursor-pointer"
+                        title={isRTL ? "إغلاق وتوليد المخطط" : "Close and Auto-Render"}
+                      >
+                        {isRTL ? "إغلاق الشكل" : "Close Shape"}
+                      </button>
                       <button onClick={handleUndo} className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-500 cursor-pointer" title="Undo">
                         <Undo2 size={14} />
                       </button>
@@ -785,7 +1033,6 @@ export default function RoomPlannerPage() {
                     </div>
                   </div>
                   
-                  {/* SVG Drawing Grid */}
                   <svg
                     className="w-full h-44 bg-slate-50 border border-slate-200 rounded-xl cursor-crosshair"
                     onClick={handleCanvasClick}
@@ -839,8 +1086,8 @@ export default function RoomPlannerPage() {
                   
                   <p className="text-[10px] text-slate-400 mt-2 text-center">
                     {isRTL 
-                      ? "انقر على الشبكة لرسم زوايا المطبخ، انقر على النقطة الخضراء الأولى للإغلاق." 
-                      : "Click on grid to add wall points. Click green start dot to close shape."}
+                      ? "انقر على الشبكة للرسم، أو انقر على 'إغلاق الشكل' لتوليد المطبخ ثلاثي الأبعاد فوراً." 
+                      : "Click on grid to draw. Click 'Close Shape' to load 3D visualizer instantly."}
                   </p>
                 </div>
               )}
@@ -893,7 +1140,7 @@ export default function RoomPlannerPage() {
                     <span>{isRTL ? "مواصفات الخامات والألوان" : "Materials & Finish customizer"}</span>
                   </h3>
                   
-                  {/* Cabinet door styles */}
+                  {/* Cabinet wood finishes */}
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 block mb-2">{isRTL ? "خامة ولون خشب الخزائن" : "Cabinet Wood & Finish"}</label>
                     <select
@@ -904,6 +1151,9 @@ export default function RoomPlannerPage() {
                       <option value="modern-gloss-grey">{isRTL ? "أكريليك رمادي لامع" : "High-Gloss Grey Acrylic"}</option>
                       <option value="modern-matte-white">{isRTL ? "أكريليك أبيض مطفي" : "Matte White Acrylic"}</option>
                       <option value="modern-sage-green">{isRTL ? "بولي لاك أخضر سيج" : "Sage Green Poly-lac"}</option>
+                      <option value="modern-navy-blue">{isRTL ? "بولي لاك أزرق داكن" : "Matte Navy Blue"}</option>
+                      <option value="modern-forest-green">{isRTL ? "أكريليك أخضر غابات" : "Forest Green Satin"}</option>
+                      <option value="modern-charcoal">{isRTL ? "أكريليك فحم داكن" : "Luxury Charcoal Black"}</option>
                       <option value="classic-oak">{isRTL ? "خشب قرو طبيعي (أوك)" : "Natural Oak Wood"}</option>
                       <option value="classic-walnut">{isRTL ? "خشب جوز فاخر (والنت)" : "Classic Walnut Wood"}</option>
                     </select>
@@ -912,11 +1162,13 @@ export default function RoomPlannerPage() {
                   {/* Countertop Stone */}
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 block mb-2">{isRTL ? "خامة سطح الرخام" : "Countertop Stone"}</label>
-                    <div className="grid grid-cols-3 gap-1.5">
+                    <div className="grid grid-cols-2 gap-1.5">
                       {[
-                        { key: "white-marble" as CountertopStone, l: isRTL ? "رخام أبيض" : "Marble" },
-                        { key: "black-granite" as CountertopStone, l: isRTL ? "جرانيت أسود" : "Granite" },
-                        { key: "grey-quartz" as CountertopStone, l: isRTL ? "كوارتز" : "Quartz" },
+                        { key: "white-marble" as CountertopStone, l: isRTL ? "رخام أبيض" : "Carrara Marble" },
+                        { key: "calacatta-gold" as CountertopStone, l: isRTL ? "كالكاتا ذهبي" : "Calacatta Gold" },
+                        { key: "black-granite" as CountertopStone, l: isRTL ? "جرانيت أسود" : "Black Granite" },
+                        { key: "grey-quartz" as CountertopStone, l: isRTL ? "كوارتز رمادي" : "Grey Quartz" },
+                        { key: "concrete-grey" as CountertopStone, l: isRTL ? "خرسانة ناعمة" : "Concrete Grey" },
                       ].map((item) => (
                         <button
                           key={item.key}
@@ -931,24 +1183,68 @@ export default function RoomPlannerPage() {
                     </div>
                   </div>
 
-                  {/* Cabinet Handle styles */}
+                  {/* Floor style selection */}
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 block mb-2">{isRTL ? "شكل ولون المقابض" : "Handles Style"}</label>
+                    <label className="text-[10px] font-bold text-slate-400 block mb-2">{isRTL ? "نوع أرضية المطبخ 3D" : "3D Kitchen Floor Style"}</label>
                     <div className="grid grid-cols-3 gap-1.5">
                       {[
-                        { key: "modern-chrome" as HandleStyle, l: isRTL ? "كروم فضي" : "Chrome" },
-                        { key: "classic-gold" as HandleStyle, l: isRTL ? "ذهبي كلاسيك" : "Gold" },
-                        { key: "handleless" as HandleStyle, l: isRTL ? "بدون مقبض" : "Handless" },
+                        { key: "parquet-oak" as FloorMaterial, l: isRTL ? "باركيه أوك" : "Oak Parquet" },
+                        { key: "marble-tiles" as FloorMaterial, l: isRTL ? "بورسلين" : "Ceramic Tile" },
+                        { key: "concrete-grey" as FloorMaterial, l: isRTL ? "خرساني" : "Grey Solid" },
                       ].map((item) => (
                         <button
                           key={item.key}
-                          onClick={() => setActiveHandle(item.key)}
-                          className={`py-1.5 rounded-lg border text-[10px] font-bold transition-all cursor-pointer ${
-                            activeHandle === item.key ? "border-pink-600 bg-pink-50/20 text-pink-600" : "border-slate-100 hover:border-slate-200"
+                          onClick={() => setFloorType(item.key)}
+                          className={`py-1.5 rounded-lg border text-[9px] font-bold transition-all cursor-pointer ${
+                            floorType === item.key ? "border-pink-600 bg-pink-50/20 text-pink-600" : "border-slate-100 hover:border-slate-200"
                           }`}
                         >
                           {item.l}
                         </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Wall background style selection */}
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 block mb-2">{isRTL ? "خامة حائط الخلفية" : "3D Wall Background Theme"}</label>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {[
+                        { key: "off-white" as WallMaterial, l: isRTL ? "سادة" : "Off-white" },
+                        { key: "exposed-brick" as WallMaterial, l: isRTL ? "طوب أحمر" : "Brick Wall" },
+                        { key: "dark-charcoal" as WallMaterial, l: isRTL ? "رمادي داكن" : "Dark Wall" },
+                      ].map((item) => (
+                        <button
+                          key={item.key}
+                          onClick={() => setWallType(item.key)}
+                          className={`py-1.5 rounded-lg border text-[9px] font-bold transition-all cursor-pointer ${
+                            wallType === item.key ? "border-pink-600 bg-pink-50/20 text-pink-600" : "border-slate-100 hover:border-slate-200"
+                          }`}
+                        >
+                          {item.l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Integrated Appliance toggles */}
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 block mb-2">{isRTL ? "تضمين أجهزة المطبخ" : "Integrate Kitchen Appliances"}</label>
+                    <div className="space-y-2 text-xs">
+                      {[
+                        { label: isRTL ? "ثلاجة ستانلس ستيل" : "Stainless Refrigerator", val: hasFridge, set: setHasFridge },
+                        { label: isRTL ? "برج الفرن المدمج" : "Integrated Oven Tower", val: hasOvenTower, set: setHasOvenTower },
+                        { label: isRTL ? "حوض مدمج مع صنبور" : "Built-in Sink & Faucet", val: hasSink, set: setHasSink },
+                      ].map((item, idx) => (
+                        <label key={idx} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={item.val}
+                            onChange={(e) => item.set(e.target.checked)}
+                            className="w-3.5 h-3.5 accent-pink-600 cursor-pointer"
+                          />
+                          <span className="text-slate-700 font-medium">{item.label}</span>
+                        </label>
                       ))}
                     </div>
                   </div>
@@ -967,7 +1263,7 @@ export default function RoomPlannerPage() {
               )}
             </div>
 
-            {/* ── Right Column: 3D Visualizer & Results (Span 8) ── */}
+            {/* ── Right Column: 3D Visualizer & Results ── */}
             <div className="xl:col-span-8 flex flex-col gap-6">
 
               {/* 3D Scene WebGL Container Panel */}
@@ -1005,7 +1301,7 @@ export default function RoomPlannerPage() {
                     type="range" min="6.0" max="21.0" step="1.0"
                     value={timeOfDay}
                     onChange={(e) => setTimeOfDay(parseFloat(e.target.value))}
-                    className="w-full sm:w-48 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-pink-505"
+                    className="w-full sm:w-48 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-pink-500"
                   />
                 </div>
               </div>
@@ -1013,6 +1309,27 @@ export default function RoomPlannerPage() {
               {step >= 3 && (
                 <div className="flex flex-col gap-6 print:block">
                   
+                  {/* Dynamic Color & Design Advice Card based on dimensions */}
+                  <div className="bg-gradient-to-r from-pink-50 to-rose-50 border-l-4 border-pink-500 p-4 rounded-xl flex items-start gap-3 print:hidden">
+                    <Sparkles className="w-5 h-5 text-pink-600 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-xs font-extrabold text-pink-800 uppercase tracking-wider mb-1">
+                        {isRTL ? "توصية مصممي TSM للتنفيذ" : "Marwa Tawfik Design Advice"}
+                      </h4>
+                      <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                        {roomArea < 10 ? (
+                          isRTL
+                            ? `مساحة مطبخك (${roomArea.toFixed(1)} م²) صغيرة نسبياً. نوصيك باختيار خامات أكريليك لامعة (أبيض أو رمادي فاتح) لتعكس الضوء وتزيد اتساع المكان، مع إضاءة LED دافئة.`
+                            : `Your kitchen area (${roomArea.toFixed(1)} sqm) is compact. We recommend High-Gloss White Acrylic cabinet finishes combined with under-cabinet LEDs to reflect light and maximize the feeling of space.`
+                        ) : (
+                          isRTL
+                            ? `مساحتك (${roomArea.toFixed(1)} م²) واسعة وممتازة. ننصحك باختيار ألوان دافئة وراقية مثل أخضر الغابات أو خشب الجوز الداكن، مع دمج جزيرة وسطية فاخرة أو خزائن أجهزة طويلة.`
+                            : `Your space (${roomArea.toFixed(1)} sqm) is spacious! We recommend using Walnut Wood or Matte Forest Green cabinets combined with a luxury central Island block and tall appliance cabinet towers.`
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
                   <div className="hidden print:block space-y-6">
                     <div className="grid grid-cols-2 gap-4 font-sans">
                       <div className="border border-slate-200 p-4 rounded-xl h-48 flex items-center justify-center bg-slate-50">
