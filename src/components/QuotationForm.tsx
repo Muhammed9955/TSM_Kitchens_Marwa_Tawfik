@@ -481,12 +481,12 @@ export default function QuotationForm() {
                           }`}
                         >
                           {/* Small Square Image Box */}
-                          <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border border-slate-800">
+                          <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 border border-slate-800">
                             <Image
                               src={item.img}
                               alt={lang === "ar" ? item.titleAr : item.titleEn}
                               fill
-                              sizes="64px"
+                              sizes="96px"
                               className="object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                           </div>
