@@ -307,10 +307,12 @@ export default function QuotationForm() {
       content_category: formData.type,
       step: nextStep
     });
+    document.getElementById("quotation")?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handlePrevStep = () => {
     setStep((p) => p - 1);
+    document.getElementById("quotation")?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleReset = () => { setFormData(initialFormData); setPriceResult(null); setStatus("idle"); setStep(1); };
@@ -396,7 +398,12 @@ export default function QuotationForm() {
                   <React.Fragment key={i}>
                     <button
                       type="button"
-                      onClick={() => { if (done) setStep(i + 1); }}
+                      onClick={() => {
+                        if (done) {
+                          setStep(i + 1);
+                          document.getElementById("quotation")?.scrollIntoView({ behavior: "smooth" });
+                        }
+                      }}
                       className={`flex flex-col items-center gap-1 transition-all flex-shrink-0 ${done ? "cursor-pointer" : "cursor-default"}`}
                     >
                       <div className={`w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all ${active ? "bg-pink-600 border-pink-500 text-white scale-110" : done ? "bg-pink-600/30 border-pink-500/50 text-pink-400" : "bg-slate-700 border-slate-600 text-zinc-500"}`}>
