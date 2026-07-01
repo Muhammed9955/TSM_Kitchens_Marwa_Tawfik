@@ -298,6 +298,20 @@ export default function QuotationForm() {
     setStatus("success");
   };
 
+  const handleNextStep = () => {
+    const nextStep = step + 1;
+    setStep(nextStep);
+    trackGAEvent("wizard_step_advance", "quote_funnel", `step_${nextStep}`);
+    trackPixelEvent("InitiateCheckout", { 
+      content_category: formData.type,
+      step: nextStep
+    });
+  };
+
+  const handlePrevStep = () => {
+    setStep((p) => p - 1);
+  };
+
   const handleReset = () => { setFormData(initialFormData); setPriceResult(null); setStatus("idle"); setStep(1); };
 
   const STEPS = [
@@ -704,7 +718,7 @@ export default function QuotationForm() {
               {/* Navigation Controls */}
               <div className="flex items-center justify-between border-t border-slate-700/60 pt-6 mt-8">
                 {step > 1 ? (
-                  <button type="button" onClick={() => setStep((p) => p - 1)}
+                  <button type="button" onClick={handlePrevStep}
                     className="flex items-center gap-1.5 bg-slate-700 hover:bg-slate-650 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition-all">
                     <ChevronLeft size={16} className={lang === "ar" ? "rotate-180" : ""} />
                     <span>{lang === "ar" ? "السابق" : "Back"}</span>
@@ -712,7 +726,7 @@ export default function QuotationForm() {
                 ) : <div />}
 
                 {step < 4 ? (
-                  <button type="button" onClick={() => setStep((p) => p + 1)}
+                  <button type="button" onClick={handleNextStep}
                     className="flex items-center gap-1.5 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition-all shadow-md shadow-pink-600/20">
                     <span>{lang === "ar" ? "التالي" : "Next"}</span>
                     <ChevronRight size={16} className={lang === "ar" ? "rotate-180" : ""} />
