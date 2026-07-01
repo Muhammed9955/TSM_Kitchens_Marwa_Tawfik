@@ -101,7 +101,7 @@ export default async function RootLayout({
       <body className={`min-h-full flex flex-col ${bodyFont} bg-white text-slate-900 selection:bg-pink-600 selection:text-white`}>
         {/* Google Analytics (GA4) */}
         <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID || "G-E25E3E7L9E"}`}
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID || "G-ZG7HL0NHBG"}`}
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -109,7 +109,7 @@ export default async function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '${process.env.NEXT_PUBLIC_GA_ID || "G-E25E3E7L9E"}');
+            gtag('config', '${process.env.NEXT_PUBLIC_GA_ID || "G-ZG7HL0NHBG"}');
           `}
         </Script>
 
