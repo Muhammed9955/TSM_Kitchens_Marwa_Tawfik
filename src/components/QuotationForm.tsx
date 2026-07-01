@@ -54,7 +54,7 @@ const materialOptions: SelectionOption[] = [
     titleEn: "Poly-lac Kitchens",
     descAr: "خامة تركية ذات لمعان فائق ومقاومة ممتازة للحرارة والخدش والرطوبة.",
     descEn: "Ultra-glossy Turkish panels with high resistance to heat, scratches and steam.",
-    img: "/images/656875593_1542746357858459_4466184516215847562_n.jpg"
+    img: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=250&q=80"
   },
   {
     id: "acrylic",
@@ -62,7 +62,7 @@ const materialOptions: SelectionOption[] = [
     titleEn: "High-Gloss Acrylic",
     descAr: "مظهر زجاجي لامع وأنيق للغاية يعطي اتساعاً بصرياً مذهلاً لغرفة المطبخ.",
     descEn: "Stunning mirror-glass visual depth that expands small kitchen spaces.",
-    img: "/images/619683564_1488417939957968_8517148991043508014_n.jpg"
+    img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=250&q=80"
   },
   {
     id: "uv_lacquer",
@@ -70,7 +70,7 @@ const materialOptions: SelectionOption[] = [
     titleEn: "UV-Lacquer Styling",
     descAr: "أحدث صيحات المطابخ بألوان مطفية ولمعان فخم مع حماية فائقة ضد البقع والأشعة.",
     descEn: "Modern sleek finish in matte or gloss with robust defense against grease stains.",
-    img: "/images/625342074_1497847029015059_7713089983891098552_n.jpg"
+    img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=250&q=80"
   },
   {
     id: "natural_wood",
@@ -78,7 +78,7 @@ const materialOptions: SelectionOption[] = [
     titleEn: "Classic Natural Oak",
     descAr: "خشب أرو طبيعي فخم معالج بالكامل ليعطي مطبخك فخامة كلاسيكية تدوم العمر كله.",
     descEn: "Premium solid oak wood treated for long-term water and moisture resistance.",
-    img: "/images/627781586_1494778699321892_3431980651333181156_n.jpg"
+    img: "https://images.unsplash.com/photo-1565183997392-2f6f122e5912?auto=format&fit=crop&w=250&q=80"
   },
   {
     id: "dressing",
@@ -86,7 +86,7 @@ const materialOptions: SelectionOption[] = [
     titleEn: "Walk-in Dressing Closet",
     descAr: "تصاميم وتنسيقات داخلية ذكية ومضاءة لتنظيم الملابس والمجوهرات والشنط بكفاءة.",
     descEn: "Bespoke storage systems with LED hangers and pull-out trays for organizing apparel.",
-    img: "/images/689215323_1577073144425780_5648049577088391907_n.jpg"
+    img: "https://images.unsplash.com/photo-1558882224-cca166733360?auto=format&fit=crop&w=250&q=80"
   }
 ];
 
@@ -97,7 +97,7 @@ const shapeOptions: SelectionOption[] = [
     titleEn: "Straight I-Shape",
     descAr: "مثالي للمطابخ الصغيرة، حيث تصطف الخزائن والأجهزة على جدار واحد.",
     descEn: "Best for tight areas. All counters and prep zones align along one single wall.",
-    img: "/images/Kitchen+Layouts_+The+Work+Triangle+vs.webp"
+    img: "https://images.unsplash.com/photo-1556909212-d5b604ad0567?auto=format&fit=crop&w=250&q=80"
   },
   {
     id: "parallel",
@@ -105,7 +105,7 @@ const shapeOptions: SelectionOption[] = [
     titleEn: "Parallel / Galley",
     descAr: "توزيع مقابل يوفر مساحتي عمل متوازيتين وسهولة الحركة بين الأجهزة.",
     descEn: "Features two facing rows of cabinets, creating an efficient and fast workspace.",
-    img: "/images/624527128_1488417973291298_8686738273473628199_n.jpg"
+    img: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=250&q=80"
   },
   {
     id: "l_shape",
@@ -113,7 +113,7 @@ const shapeOptions: SelectionOption[] = [
     titleEn: "Corner L-Shape",
     descAr: "الشكل الأكثر شعبية، يسهل توزيع مثلث الحركة بحرية في الزوايا.",
     descEn: "Highly popular setup optimizing corner workspaces and matching open-concept areas.",
-    img: "/images/work-triangle-kitchen-remodel.jpg"
+    img: "https://images.unsplash.com/photo-1556912173-3bb406ef7e77?auto=format&fit=crop&w=250&q=80"
   },
   {
     id: "u_shape",
@@ -121,7 +121,7 @@ const shapeOptions: SelectionOption[] = [
     titleEn: "Spacious U-Shape",
     descAr: "توزيع على 3 جدران يوفر مساحات تخزين وتحضير رخام هائلة ومريحة.",
     descEn: "Surrounds the cook on three sides with maximum cabinets and countertop spaces.",
-    img: "/images/619207793_1488418006624628_6320482486334913994_n.jpg"
+    img: "https://images.unsplash.com/photo-1556911220-115b1368a180?auto=format&fit=crop&w=250&q=80"
   },
   {
     id: "island",
@@ -129,7 +129,7 @@ const shapeOptions: SelectionOption[] = [
     titleEn: "Center Island Setup",
     descAr: "إضافة جزيرة للمطبخ تستخدم كمنطقة طبخ، غسيل، أو كطاولة لتناول الوجبات.",
     descEn: "Adds a center focal point for cooking, washing, or gathering for morning meals.",
-    img: "/images/625342074_1497847029015059_7713089983891098552_n.jpg"
+    img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=250&q=80"
   }
 ];
 
@@ -469,45 +469,44 @@ export default function QuotationForm() {
                       <span>{lang === "ar" ? "اختر خامة المطبخ المفضلة (شاهد الصور):" : "Choose Material Finish (With Photos):"}</span>
                     </label>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {materialOptions.map((item) => (
                         <div
                           key={item.id}
                           onClick={() => setFormData((prev) => ({ ...prev, type: item.id }))}
-                          className={`relative rounded-2xl overflow-hidden border cursor-pointer select-none transition-all duration-300 group flex flex-col justify-between ${
+                          className={`relative rounded-xl overflow-hidden border cursor-pointer select-none transition-all duration-300 group flex items-center p-3 gap-3 ${
                             formData.type === item.id
-                              ? "border-pink-500 bg-pink-500/[0.03] shadow-lg shadow-pink-500/10 scale-[1.01]"
+                              ? "border-pink-500 bg-pink-500/[0.03] shadow-lg shadow-pink-500/5 scale-[1.01]"
                               : "border-slate-700 bg-slate-900/60 hover:border-slate-500 text-zinc-300"
                           }`}
                         >
-                          {/* Image Box */}
-                          <div className="relative aspect-[16/9] w-full border-b border-slate-800">
+                          {/* Small Square Image Box */}
+                          <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border border-slate-800">
                             <Image
                               src={item.img}
                               alt={lang === "ar" ? item.titleAr : item.titleEn}
                               fill
-                              sizes="(max-w-768px) 100vw, 33vw"
-                              className="object-cover transition-transform duration-500 group-hover:scale-103"
+                              sizes="64px"
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-60" />
                           </div>
 
                           {/* Content Box */}
-                          <div className="p-4 flex items-start justify-between gap-2">
-                            <div className="flex-1">
-                              <h4 className="text-sm font-bold text-white mb-1">
-                                {lang === "ar" ? item.titleAr : item.titleEn}
-                              </h4>
-                              <p className="text-zinc-400 text-xs leading-relaxed line-clamp-2">
-                                {lang === "ar" ? item.descAr : item.descEn}
-                              </p>
-                            </div>
-                            <div className="flex-shrink-0 pt-0.5">
-                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
-                                formData.type === item.id ? "border-pink-500 bg-pink-600 text-white" : "border-slate-500"
-                              }`}>
-                                {formData.type === item.id && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                              </div>
+                          <div className="flex-grow min-w-0">
+                            <h4 className="text-xs sm:text-sm font-bold text-white mb-0.5">
+                              {lang === "ar" ? item.titleAr : item.titleEn}
+                            </h4>
+                            <p className="text-[10px] text-zinc-400 leading-relaxed line-clamp-2">
+                              {lang === "ar" ? item.descAr : item.descEn}
+                            </p>
+                          </div>
+
+                          {/* Radio Dot indicator */}
+                          <div className="flex-shrink-0 pt-0.5">
+                            <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center transition-colors ${
+                              formData.type === item.id ? "border-pink-500 bg-pink-600 text-white" : "border-slate-500"
+                            }`}>
+                              {formData.type === item.id && <div className="w-1 h-1 rounded-full bg-white" />}
                             </div>
                           </div>
                         </div>
@@ -522,31 +521,31 @@ export default function QuotationForm() {
                       <span>{lang === "ar" ? "اختر مخطط شكل المطبخ الهيكلي:" : "Select Layout Shape Configuration:"}</span>
                     </label>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                       {shapeOptions.map((item) => (
                         <div
                           key={item.id}
                           onClick={() => setFormData((prev) => ({ ...prev, shape: item.id }))}
-                          className={`rounded-2xl overflow-hidden border cursor-pointer select-none transition-all duration-300 flex flex-col justify-between group ${
+                          className={`rounded-xl overflow-hidden border cursor-pointer select-none transition-all duration-300 flex flex-col justify-between group p-2 gap-2 text-center ${
                             formData.shape === item.id
                               ? "border-pink-500 bg-pink-500/[0.03] shadow-md shadow-pink-500/5"
                               : "border-slate-700 bg-slate-900/60 hover:border-slate-500"
                           }`}
                         >
                           {/* Image Box */}
-                          <div className="relative aspect-square w-full border-b border-slate-800">
+                          <div className="relative aspect-square w-full rounded-lg overflow-hidden border border-slate-800">
                             <Image
                               src={item.img}
                               alt={lang === "ar" ? item.titleAr : item.titleEn}
                               fill
-                              sizes="(max-w-768px) 100vw, 20vw"
-                              className="object-cover transition-transform duration-500 group-hover:scale-103"
+                              sizes="80px"
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-black/25 group-hover:bg-transparent transition-colors" />
+                            <div className="absolute inset-0 bg-black/20 group-hover:opacity-0 transition-opacity" />
                           </div>
 
-                          <div className="p-3 text-center">
-                            <span className={`text-[11px] sm:text-xs font-bold transition-colors ${
+                          <div className="pb-1 text-center flex items-center justify-center min-h-[28px]">
+                            <span className={`text-[10px] sm:text-xs font-bold transition-colors leading-tight ${
                               formData.shape === item.id ? "text-pink-500 font-extrabold" : "text-zinc-300"
                             }`}>
                               {lang === "ar" ? catLabelAr(item.id) : catLabelEn(item.id)}
