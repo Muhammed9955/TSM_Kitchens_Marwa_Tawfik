@@ -62,6 +62,7 @@ export default function Navbar() {
     { href: `${basePath}/#services`, label: dict.nav.services },
     { href: `${basePath}/projects`, label: dict.nav.projects },
     { href: `${basePath}/gallery`, label: dict.nav.gallery },
+    { href: `${basePath}/room-planner`, label: lang === "ar" ? "مخطط المطبخ" : "Room Planner" },
     { href: `${basePath}/#contact`, label: dict.nav.contact },
   ];
 
