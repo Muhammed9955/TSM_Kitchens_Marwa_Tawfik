@@ -64,7 +64,8 @@ const materialOptions: MaterialOption[] = [
     tagEn: "High-Resistance Heat Proof",
     tier: "popular",
     tierColorClass: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-    img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=80",
+    // img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=80",
+    img: "https://images.unsplash.com/photo-1722605090433-41d1183a792d?q=80&w=1330&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     features: ["Heat resistant", "Scratch proof", "Easy to clean"],
     featuresAr: ["مقاوم للحرارة", "مقاوم للخدش", "سهل التنظيف"],
   },
@@ -104,18 +105,18 @@ const materialOptions: MaterialOption[] = [
     features: ["Solid natural oak", "Lifetime durability", "Classic elegance"],
     featuresAr: ["خشب أرو طبيعي", "متانة مدى الحياة", "أناقة كلاسيكية"],
   },
-  {
-    id: "dressing",
-    titleAr: "دريسنج روم",
-    titleEn: "Dressing Closet",
-    tagAr: "تقسيمات ذكية وإضاءة ليد",
-    tagEn: "Bespoke Wardrobe Organizers",
-    tier: "premium",
-    tierColorClass: "bg-rose-500/20 text-rose-300 border-rose-500/30",
-    img: "https://images.unsplash.com/photo-1558882224-cca166733360?auto=format&fit=crop&w=500&q=80",
-    features: ["LED lighting", "Pull-out trays", "Custom compartments"],
-    featuresAr: ["إضاءة ليد مدمجة", "أدراج سحب هيدروليك", "تقسيمات حسب الطلب"],
-  },
+  // {
+  //   id: "dressing",
+  //   titleAr: "دريسنج روم",
+  //   titleEn: "Dressing Closet",
+  //   tagAr: "تقسيمات ذكية وإضاءة ليد",
+  //   tagEn: "Bespoke Wardrobe Organizers",
+  //   tier: "premium",
+  //   tierColorClass: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+  //   img: "https://images.unsplash.com/photo-1558882224-cca166733360?auto=format&fit=crop&w=500&q=80",
+  //   features: ["LED lighting", "Pull-out trays", "Custom compartments"],
+  //   featuresAr: ["إضاءة ليد مدمجة", "أدراج سحب هيدروليك", "تقسيمات حسب الطلب"],
+  // },
 ];
 
 // ─── Color Options (Cabinet color swatches) ──────────────────────────────────
@@ -412,36 +413,21 @@ export default function QuotationForm() {
                     </p>
 
                     {/* Material Options Grid */}
-                    <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {materialOptions.map((item) => {
                         const selected = formData.type === item.id;
                         return (
                           <div
                             key={item.id}
                             onClick={() => setFormData((prev) => ({ ...prev, type: item.id }))}
-                            className={`relative rounded-2xl overflow-hidden border cursor-pointer select-none transition-all duration-300 group flex items-stretch ${selected ? "border-pink-500 bg-pink-500/5 shadow-lg shadow-pink-500/10" : "border-slate-700 bg-slate-900/60 hover:border-slate-500"}`}
+                            className={`relative p-5 rounded-2xl border cursor-pointer select-none transition-all duration-300 group flex flex-col justify-between ${
+                              selected
+                                ? "border-pink-500 bg-pink-500/5 shadow-lg shadow-pink-500/10 scale-[1.01]"
+                                : "border-slate-700 bg-slate-900/60 hover:border-slate-500"
+                            }`}
                           >
-                            {/* Image */}
-                            <div className="relative w-24 sm:w-32 flex-shrink-0">
-                              <Image
-                                src={item.img}
-                                alt={lang === "ar" ? item.titleAr : item.titleEn}
-                                fill
-                                sizes="128px"
-                                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                              />
-                              {/* Selected overlay */}
-                              {selected && (
-                                <div className="absolute inset-0 bg-pink-600/20 flex items-center justify-center">
-                                  <div className="w-7 h-7 rounded-full bg-pink-600 flex items-center justify-center shadow-lg">
-                                    <svg viewBox="0 0 12 9" fill="none" className="w-3.5 h-3.5"><path d="M1 4.5L4.5 8L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Content */}
-                            <div className="flex-grow p-4 flex flex-col justify-between min-w-0">
+                            {/* Card Header details */}
+                            <div className="flex items-start justify-between gap-3 mb-3">
                               <div>
                                 <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                                   <h4 className={`text-sm sm:text-base font-extrabold transition-colors ${selected ? "text-pink-400" : "text-white"}`}>
@@ -451,18 +437,26 @@ export default function QuotationForm() {
                                     {getTierLabel(item.tier, lang)}
                                   </span>
                                 </div>
-                                <p className="text-[11px] text-zinc-500 font-semibold italic mb-2">
+                                <p className="text-[11px] text-zinc-500 font-semibold italic">
                                   {lang === "ar" ? item.tagAr : item.tagEn}
                                 </p>
                               </div>
-                              {/* Feature tags */}
-                              <div className="flex flex-wrap gap-1.5">
-                                {(lang === "ar" ? item.featuresAr : item.features).map((f) => (
-                                  <span key={f} className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${selected ? "bg-pink-600/20 text-pink-300" : "bg-slate-700 text-zinc-400"}`}>
-                                    {f}
-                                  </span>
-                                ))}
+                              
+                              {/* Selected check circle dot */}
+                              <div className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 transition-colors ${
+                                selected ? "border-pink-500 bg-pink-600 text-white" : "border-slate-600"
+                              }`}>
+                                {selected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                               </div>
+                            </div>
+
+                            {/* Feature tags */}
+                            <div className="flex flex-wrap gap-1.5 mt-auto">
+                              {(lang === "ar" ? item.featuresAr : item.features).map((f) => (
+                                <span key={f} className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${selected ? "bg-pink-600/20 text-pink-300" : "bg-slate-700 text-zinc-400"}`}>
+                                  {f}
+                                </span>
+                              ))}
                             </div>
                           </div>
                         );
