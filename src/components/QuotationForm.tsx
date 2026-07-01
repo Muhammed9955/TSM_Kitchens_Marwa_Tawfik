@@ -9,6 +9,7 @@ import { trackGAEvent, trackPixelEvent } from "@/utils/analytics";
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface QuoteFormData {
   type: string;
+  color: string;
   shape: string;
   width: string;
   depth: string;
@@ -25,6 +26,7 @@ interface QuoteFormData {
 
 const initialFormData: QuoteFormData = {
   type: "poly_lac",
+  color: "white",
   shape: "l_shape",
   width: "3.5",
   depth: "2.5",
@@ -39,7 +41,7 @@ const initialFormData: QuoteFormData = {
   notes: "",
 };
 
-// ─── Material Options (Targeted texture shots + tier) ───────────────────────
+// ─── Material Options (Updated High-Quality Unsplash Kitchen Detail Shots) ───
 interface MaterialOption {
   id: string;
   titleAr: string;
@@ -58,11 +60,11 @@ const materialOptions: MaterialOption[] = [
     id: "poly_lac",
     titleAr: "بولي لاك",
     titleEn: "Poly-lac",
-    tagAr: "الأكثر مبيعاً",
-    tagEn: "Best Seller",
+    tagAr: "مقاوم للحرارة والرطوبة",
+    tagEn: "High-Resistance Heat Proof",
     tier: "popular",
     tierColorClass: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-    img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&q=80",
+    img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=80",
     features: ["Heat resistant", "Scratch proof", "Easy to clean"],
     featuresAr: ["مقاوم للحرارة", "مقاوم للخدش", "سهل التنظيف"],
   },
@@ -70,11 +72,11 @@ const materialOptions: MaterialOption[] = [
     id: "acrylic",
     titleAr: "أكريليك",
     titleEn: "High-Gloss Acrylic",
-    tagAr: "لمعان زجاجي",
-    tagEn: "Mirror Gloss",
+    tagAr: "لمعان زجاجي فخم",
+    tagEn: "Reflective Mirror Gloss",
     tier: "popular",
     tierColorClass: "bg-pink-500/20 text-pink-300 border-pink-500/30",
-    img: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=400&q=80",
+    img: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=500&q=80",
     features: ["Mirror-like gloss", "Expands space visually", "Modern look"],
     featuresAr: ["لمعان مرآوي", "يوسع المساحة بصرياً", "مظهر عصري"],
   },
@@ -82,11 +84,11 @@ const materialOptions: MaterialOption[] = [
     id: "uv_lacquer",
     titleAr: "يو في لاك",
     titleEn: "UV Lacquer",
-    tagAr: "مطفي أو لامع",
-    tagEn: "Matte or Gloss",
+    tagAr: "ألوان مطفية ومقاومة للبقع",
+    tagEn: "Anti-Fingerprint Matte/Gloss",
     tier: "premium",
     tierColorClass: "bg-violet-500/20 text-violet-300 border-violet-500/30",
-    img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80",
+    img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=500&q=80",
     features: ["UV grease shield", "Matte or gloss", "Rich color range"],
     featuresAr: ["حماية ضد البقع", "مطفي أو لامع", "ألوان ثرية"],
   },
@@ -94,11 +96,11 @@ const materialOptions: MaterialOption[] = [
     id: "natural_wood",
     titleAr: "خشب أرو طبيعي",
     titleEn: "Natural Oak Wood",
-    tagAr: "كلاسيك فاخر",
-    tagEn: "Classic Luxury",
+    tagAr: "فخامة الخشب الكلاسيكي",
+    tagEn: "Classic Solid Hardwood",
     tier: "ultra",
     tierColorClass: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-    img: "https://images.unsplash.com/photo-1565183997392-2f6f122e5912?auto=format&fit=crop&w=400&q=80",
+    img: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=500&q=80",
     features: ["Solid natural oak", "Lifetime durability", "Classic elegance"],
     featuresAr: ["خشب أرو طبيعي", "متانة مدى الحياة", "أناقة كلاسيكية"],
   },
@@ -106,14 +108,31 @@ const materialOptions: MaterialOption[] = [
     id: "dressing",
     titleAr: "دريسنج روم",
     titleEn: "Dressing Closet",
-    tagAr: "غرف ملابس مضاءة",
-    tagEn: "Walk-in Wardrobe",
+    tagAr: "تقسيمات ذكية وإضاءة ليد",
+    tagEn: "Bespoke Wardrobe Organizers",
     tier: "premium",
     tierColorClass: "bg-rose-500/20 text-rose-300 border-rose-500/30",
-    img: "https://images.unsplash.com/photo-1558882224-cca166733360?auto=format&fit=crop&w=400&q=80",
+    img: "https://images.unsplash.com/photo-1558882224-cca166733360?auto=format&fit=crop&w=500&q=80",
     features: ["LED lighting", "Pull-out trays", "Custom compartments"],
     featuresAr: ["إضاءة ليد مدمجة", "أدراج سحب هيدروليك", "تقسيمات حسب الطلب"],
   },
+];
+
+// ─── Color Options (Cabinet color swatches) ──────────────────────────────────
+interface ColorOption {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  hex: string;
+}
+
+const colorOptions: ColorOption[] = [
+  { id: "white", nameAr: "أبيض ناصع", nameEn: "Glossy White", hex: "#FFFFFF" },
+  { id: "cashmere", nameAr: "كشمير فخم", nameEn: "Luxurious Cashmere", hex: "#E3D3C4" },
+  { id: "grey", nameAr: "رمادي جرافيت", nameEn: "Graphite Grey", hex: "#4A4A4A" },
+  { id: "green", nameAr: "أخضر زيتوني", nameEn: "Sage Green", hex: "#708272" },
+  { id: "navy", nameAr: "كحلي ملكي", nameEn: "Royal Navy", hex: "#1D2A44" },
+  { id: "wood", nameAr: "خشبي طبيعي", nameEn: "Wood Grain", hex: "#A87C53" },
 ];
 
 // ─── SVG Floor Plan Shapes ───────────────────────────────────────────────────
@@ -129,7 +148,7 @@ const ShapeSVGs: Record<string, React.FC<{ selected: boolean }>> = {
       <rect x="4" y="8" width="72" height="14" rx="3" fill={selected ? "#ec4899" : "#475569"} />
       <rect x="4" y="8" width="72" height="4" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
       <rect x="4" y="38" width="72" height="14" rx="3" fill={selected ? "#ec4899" : "#475569"} />
-      <rect x="4" y="38" width="72" height="4" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
+      <rect x="4" y="38" width="72" height="5" rx="2" fill={selected ? "#f472b6" : "#64748b"} />
     </svg>
   ),
   l_shape: ({ selected }) => (
@@ -243,6 +262,7 @@ export default function QuotationForm() {
     setPriceResult(liveEstimate);
 
     const typeLabel = materialOptions.find((m) => m.id === formData.type)?.[lang === "ar" ? "titleAr" : "titleEn"] ?? formData.type;
+    const colorLabel = colorOptions.find((c) => c.id === formData.color)?.[lang === "ar" ? "nameAr" : "nameEn"] ?? formData.color;
     const shapeLabel = shapeOptions.find((s) => s.id === formData.shape)?.[lang === "ar" ? "titleAr" : "titleEn"] ?? formData.shape;
 
     const countertopLabel = formData.countertop === "quartz" ? (lang === "ar" ? "كوارتز" : "Quartz")
@@ -268,8 +288,8 @@ export default function QuotationForm() {
     ).join(", ");
 
     const msg = lang === "ar"
-      ? `مرحباً TSM Kitchens،\n\nطلب تسعيرة مطبخ:\n\n📐 *المواصفات:*\n- الخامة: ${typeLabel}\n- الشكل: ${shapeLabel}\n- الأبعاد: ${formData.width}م × ${formData.depth}م\n- الارتفاع: ${heightLabel}\n- المقابض: ${handlesLabel}\n- الإكسسوارات: ${hardwareLabel}\n- الرخام: ${countertopLabel}\n- الإضافات: ${accLabels || "لا توجد"}\n\n👤 *بيانات العميل:*\n- الاسم: ${formData.name}\n- الهاتف: ${formData.phone}\n- المنطقة: ${formData.location}\n\n🧮 *التقدير التقريبي:*\n- ~ ${liveEstimate.meters} متر طولي\n- بين ${liveEstimate.min.toLocaleString()} و ${liveEstimate.max.toLocaleString()} ج.م\n\n📝 ملاحظات: ${formData.notes || "لا توجد"}`
-      : `Hello TSM Kitchens,\n\nKitchen Quote Request:\n\n📐 *Specifications:*\n- Material: ${typeLabel}\n- Shape: ${shapeLabel}\n- Dimensions: ${formData.width}m × ${formData.depth}m\n- Height: ${heightLabel}\n- Handles: ${handlesLabel}\n- Hardware: ${hardwareLabel}\n- Countertop: ${countertopLabel}\n- Accessories: ${accLabels || "None"}\n\n👤 *Client Details:*\n- Name: ${formData.name}\n- Phone: ${formData.phone}\n- Location: ${formData.location}\n\n🧮 *Estimate:*\n- ~ ${liveEstimate.meters} running meters\n- EGP ${liveEstimate.min.toLocaleString()} – ${liveEstimate.max.toLocaleString()}\n\n📝 Notes: ${formData.notes || "None"}`;
+      ? `مرحباً TSM Kitchens،\n\nطلب تسعيرة مطبخ:\n\n📐 *المواصفات:*\n- الخامة: ${typeLabel}\n- اللون المختار: ${colorLabel}\n- الشكل: ${shapeLabel}\n- الأبعاد: ${formData.width}م × ${formData.depth}م\n- الارتفاع: ${heightLabel}\n- المقابض: ${handlesLabel}\n- الإكسسوارات: ${hardwareLabel}\n- الرخام: ${countertopLabel}\n- الإضافات: ${accLabels || "لا توجد"}\n\n👤 *بيانات العميل:*\n- الاسم: ${formData.name}\n- الهاتف: ${formData.phone}\n- المنطقة: ${formData.location}\n\n🧮 *التقدير التقريبي:*\n- ~ ${liveEstimate.meters} متر طولي\n- بين ${liveEstimate.min.toLocaleString()} و ${liveEstimate.max.toLocaleString()} ج.م\n\n📝 ملاحظات: ${formData.notes || "لا توجد"}`
+      : `Hello TSM Kitchens,\n\nKitchen Quote Request:\n\n📐 *Specifications:*\n- Material: ${typeLabel}\n- Selected Color: ${colorLabel}\n- Shape: ${shapeLabel}\n- Dimensions: ${formData.width}m × ${formData.depth}m\n- Height: ${heightLabel}\n- Handles: ${handlesLabel}\n- Hardware: ${hardwareLabel}\n- Countertop: ${countertopLabel}\n- Accessories: ${accLabels || "None"}\n\n👤 *Client Details:*\n- Name: ${formData.name}\n- Phone: ${formData.phone}\n- Location: ${formData.location}\n\n🧮 *Estimate:*\n- ~ ${liveEstimate.meters} running meters\n- EGP ${liveEstimate.min.toLocaleString()} – ${liveEstimate.max.toLocaleString()}\n\n📝 Notes: ${formData.notes || "None"}`;
 
     window.open(`https://wa.me/201113561777?text=${encodeURIComponent(msg)}`, "_blank");
     trackGAEvent("form_submit", "lead", "quotation_calculator");
@@ -280,7 +300,7 @@ export default function QuotationForm() {
   const handleReset = () => { setFormData(initialFormData); setPriceResult(null); setStatus("idle"); setStep(1); };
 
   const STEPS = [
-    { icon: Layers, labelAr: "الخامة", labelEn: "Material" },
+    { icon: Layers, labelAr: "الخامة واللون", labelEn: "Material & Color" },
     { icon: LayoutDashboard, labelAr: "الشكل", labelEn: "Layout" },
     { icon: Settings, labelAr: "الخيارات", labelEn: "Options" },
     { icon: User, labelAr: "العميل", labelEn: "Contact" },
@@ -303,8 +323,8 @@ export default function QuotationForm() {
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
             {lang === "ar"
-              ? "اختر خامة المطبخ وشكله ومقاساته وتفاصيله واحصل على تسعير فوري يُرسَل مباشرة إلى واتساب المعرض."
-              : "Pick your material, layout, dimensions and finishes to get an instant quote sent to WhatsApp."}
+              ? "اختر خامة المطبخ ولونه وشكله ومقاساته واحصل على تسعير فوري يُرسَل مباشرة إلى واتساب المعرض."
+              : "Pick your material, color, layout, dimensions and finishes to get an instant quote sent to WhatsApp."}
           </p>
           <div className="w-16 h-1 bg-pink-600 mx-auto rounded-full mt-4" />
         </div>
@@ -326,6 +346,7 @@ export default function QuotationForm() {
             <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mb-6 text-sm space-y-3">
               {[
                 [lang === "ar" ? "الخامة:" : "Material:", materialOptions.find(m => m.id === formData.type)?.[lang === "ar" ? "titleAr" : "titleEn"]],
+                [lang === "ar" ? "اللون:" : "Color:", colorOptions.find(c => c.id === formData.color)?.[lang === "ar" ? "nameAr" : "nameEn"]],
                 [lang === "ar" ? "الشكل:" : "Layout:", shapeOptions.find(s => s.id === formData.shape)?.[lang === "ar" ? "titleAr" : "titleEn"]],
                 [lang === "ar" ? "المحيط التقريبي:" : "Est. Length:", `~ ${priceResult.meters} ${lang === "ar" ? "متر طولي" : "meters"}`],
               ].map(([label, val]) => (
@@ -379,17 +400,18 @@ export default function QuotationForm() {
 
             <form onSubmit={handleSubmit}>
 
-              {/* ── STEP 1: Material Selection ── */}
+              {/* ── STEP 1: Material & Color Selection ── */}
               {step === 1 && (
-                <div className="space-y-5 animate-fade-in">
+                <div className="space-y-6 animate-fade-in">
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-white mb-1">
-                      {lang === "ar" ? "اختر خامة المطبخ" : "Choose Cabinet Material"}
+                      {lang === "ar" ? "اختر خامة المطبخ ولونه" : "Choose Cabinet Material & Color"}
                     </h3>
                     <p className="text-zinc-500 text-xs mb-5">
-                      {lang === "ar" ? "كل خامة لها مظهر ومتانة وسعر مختلف — اختر الأنسب لك" : "Each finish has a unique look, durability and price point."}
+                      {lang === "ar" ? "اختر نوع الخامة واللون المفضل لخزائن مطبخك" : "Select cabinet material and color swatches for your project."}
                     </p>
 
+                    {/* Material Options Grid */}
                     <div className="grid grid-cols-1 gap-3">
                       {materialOptions.map((item) => {
                         const selected = formData.type === item.id;
@@ -400,12 +422,12 @@ export default function QuotationForm() {
                             className={`relative rounded-2xl overflow-hidden border cursor-pointer select-none transition-all duration-300 group flex items-stretch ${selected ? "border-pink-500 bg-pink-500/5 shadow-lg shadow-pink-500/10" : "border-slate-700 bg-slate-900/60 hover:border-slate-500"}`}
                           >
                             {/* Image */}
-                            <div className="relative w-28 sm:w-36 flex-shrink-0">
+                            <div className="relative w-24 sm:w-32 flex-shrink-0">
                               <Image
                                 src={item.img}
                                 alt={lang === "ar" ? item.titleAr : item.titleEn}
                                 fill
-                                sizes="144px"
+                                sizes="128px"
                                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                               />
                               {/* Selected overlay */}
@@ -446,6 +468,38 @@ export default function QuotationForm() {
                         );
                       })}
                     </div>
+
+                    {/* Color Swatch Selection */}
+                    <div className="mt-8 border-t border-slate-700/50 pt-6">
+                      <h4 className="text-zinc-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span className="w-1.5 h-3.5 bg-pink-500 rounded-full inline-block" />
+                        {lang === "ar" ? "اختر لون خزائن المطبخ:" : "Select Cabinet Color Swatch:"}
+                      </h4>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                        {colorOptions.map((c) => {
+                          const isSelected = formData.color === c.id;
+                          return (
+                            <button
+                              key={c.id}
+                              type="button"
+                              onClick={() => setFormData((prev) => ({ ...prev, color: c.id }))}
+                              className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                                isSelected
+                                  ? "border-pink-500 bg-pink-500/10 text-white"
+                                  : "border-slate-700 bg-slate-900/60 text-zinc-400 hover:border-slate-650"
+                              }`}
+                            >
+                              <span
+                                className="w-4 h-4 rounded-full border border-slate-600 flex-shrink-0 shadow-inner"
+                                style={{ backgroundColor: c.hex }}
+                              />
+                              <span className="truncate">{lang === "ar" ? c.nameAr : c.nameEn}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               )}
@@ -575,7 +629,7 @@ export default function QuotationForm() {
                     </div>
                   </div>
 
-                  {/* 🔴 Live Price Preview Bar */}
+                  {/* Live Price Preview Bar */}
                   <div className="bg-gradient-to-r from-pink-950/60 to-fuchsia-950/60 border border-pink-500/30 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div className="text-center sm:text-start">
                       <p className="text-zinc-400 text-xs font-semibold mb-0.5">
@@ -640,6 +694,7 @@ export default function QuotationForm() {
                   <div className="bg-slate-900/80 border border-slate-700 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
                     <div className="flex flex-col gap-1 text-zinc-400 text-xs">
                       <span>📦 {materialOptions.find(m => m.id === formData.type)?.[lang === "ar" ? "titleAr" : "titleEn"]}</span>
+                      <span>🎨 {colorOptions.find(c => c.id === formData.color)?.[lang === "ar" ? "nameAr" : "nameEn"]}</span>
                       <span>📐 {shapeOptions.find(s => s.id === formData.shape)?.[lang === "ar" ? "titleAr" : "titleEn"]} · {formData.width}m × {formData.depth}m</span>
                     </div>
                     <div className="text-center">
@@ -656,7 +711,7 @@ export default function QuotationForm() {
               <div className="flex items-center justify-between border-t border-slate-700/60 pt-6 mt-8">
                 {step > 1 ? (
                   <button type="button" onClick={() => setStep((p) => p - 1)}
-                    className="flex items-center gap-1.5 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition-all">
+                    className="flex items-center gap-1.5 bg-slate-700 hover:bg-slate-650 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition-all">
                     <ChevronLeft size={16} className={lang === "ar" ? "rotate-180" : ""} />
                     <span>{lang === "ar" ? "السابق" : "Back"}</span>
                   </button>
@@ -685,5 +740,3 @@ export default function QuotationForm() {
     </section>
   );
 }
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
