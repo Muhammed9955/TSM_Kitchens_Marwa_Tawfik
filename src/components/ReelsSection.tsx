@@ -45,7 +45,7 @@ export default function ReelsSection() {
 
   const handleOpenLightbox = (id: string) => {
     setActiveLightboxId(id);
-    trackGAEvent("reel_fullscreen_open", "video_engagement", id);
+    trackGAEvent("insta_reel_click", "video_engagement", id);
     trackPixelEvent("ViewContent", { content_name: `Reel-Fullscreen-${id}`, content_category: "Reels" });
   };
 

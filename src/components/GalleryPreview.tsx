@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import { useLanguage } from "@/locales/LanguageContext";
+import { trackGAEvent, trackPixelEvent } from "@/utils/analytics";
 
 // 10 Featured kitchen design images for the home page carousel
 const featuredFiles = [
@@ -55,6 +56,9 @@ export default function GalleryPreview() {
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index);
+    const itemTitleEn = `Featured Kitchen Design - Model ${index + 1}`;
+    trackGAEvent("view_gallary", "engagement", itemTitleEn);
+    trackPixelEvent("ViewContent", { content_name: itemTitleEn, content_category: "GalleryPreview" });
   };
 
   const nextLightboxImage = useCallback(() => {
@@ -186,6 +190,9 @@ export default function GalleryPreview() {
         <div className="text-center mt-10">
           <Link
             href={lang === "ar" ? "/gallery" : "/en/gallery"}
+            onClick={() => {
+              trackGAEvent("view_gallary", "engagement", "view_full_gallery_cta");
+            }}
             className="inline-flex items-center justify-center bg-pink-600 hover:bg-pink-700 text-white font-bold px-8 py-4 rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(236,72,153,0.4)]"
           >
             {lang === "ar" ? "عرض معرض الأعمال الكامل (50+ تصميم)" : "View Full Portfolio (50+ Designs)"}

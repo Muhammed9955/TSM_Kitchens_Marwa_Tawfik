@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, ArrowRight, ArrowLeft } from "lucide-react";
 import { useLanguage } from "@/locales/LanguageContext";
+import { trackGAEvent, trackPixelEvent } from "@/utils/analytics";
 
 interface ProjectPreviewItem {
   id: number;
@@ -112,6 +113,10 @@ export default function ProjectsPreview() {
               <div className="p-6 pt-0 mt-auto">
                 <Link
                   href={`${targetLink}#project-${project.id}`}
+                  onClick={() => {
+                    trackGAEvent("view_project", "engagement", project.titleEn);
+                    trackPixelEvent("ViewContent", { content_name: project.titleEn, content_category: "ProjectsPreview" });
+                  }}
                   className="w-full inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-pink-600 text-slate-700 hover:text-white font-bold py-3 rounded-xl border border-slate-200/50 hover:border-pink-500 transition-all duration-300 text-xs sm:text-sm cursor-pointer"
                 >
                   <span>{lang === "ar" ? "عرض التفاصيل والمواصفات" : "View Details & Specs"}</span>
@@ -127,6 +132,9 @@ export default function ProjectsPreview() {
         <div className="text-center mt-6">
           <Link
             href={targetLink}
+            onClick={() => {
+              trackGAEvent("view_project", "engagement", "view_all_projects_cta");
+            }}
             className="inline-flex items-center justify-center bg-zinc-900 hover:bg-zinc-800 text-white font-bold px-8 py-4 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
           >
             {lang === "ar" ? "تصفح كافة تفاصيل المشاريع" : "Explore All Project Details"}
