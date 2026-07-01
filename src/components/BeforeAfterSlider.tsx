@@ -36,38 +36,38 @@ interface SliderShowcase {
 }
 
 const showcases: SliderShowcase[] = [
-  {
-    id: "showcase-1",
-    titleAr: "مطبخ أكريليك فخم (نموذج 11)",
-    titleEn: "Luxury Acrylic Kitchen (Model 11)",
-    beforeImg: "/images/714759260_1607152241417870_3786333699674067988_n%20%281%29.jpg", // 3D Render
-    afterImg: "/images/714759260_1607152241417870_3786333699674067988_n.jpg", // Executed site
-    beforeLabelAr: "التصميم ثلاثي الأبعاد 3D",
-    beforeLabelEn: "3D Render Design",
-    afterLabelAr: "التسليم الفعلي على أرض الواقع",
-    afterLabelEn: "Final Executed Site",
-    descAr: "مطابقة تامة بنسبة 100% بين التصميم الهندسي المقترح والتركيب الفعلي بالموقع مع رخام كوارتز وإضاءة مخفية.",
-    descEn: "100% precision match between the proposed 3D CAD render and the final execution at the client's home."
-  },
-  {
-    id: "showcase-2",
-    titleAr: "مطبخ مودرن عصري (نموذج 1)",
-    titleEn: "Modern Design (Model 1)",
-    beforeImg: "/images/619683564_1488417939957968_8517148991043508014_n.jpg", // 3D
-    afterImg: "/images/622381245_1488418043291291_1345312205051082767_n.jpg", // Reality
-    beforeLabelAr: "المخطط المقترح ثلاثي الأبعاد",
-    beforeLabelEn: "Proposed 3D Layout",
-    afterLabelAr: "موقع التسليم والتركيب",
-    afterLabelEn: "Executed Installation",
-    descAr: "توزيع مثالي لوحدات التخزين ومكان البلت-إن مع توزيع ذكي لمسار الإضاءة.",
-    descEn: "Perfect coordination of storage cabinets, built-in appliances and custom LED placement."
-  },
+  // {
+  //   id: "showcase-1",
+  //   titleAr: "مطبخ أكريليك فخم (نموذج 11)",
+  //   titleEn: "Luxury Acrylic Kitchen (Model 11)",
+  //   beforeImg: "/images/648641871_1523994963066932_480663675121755074_n.jpg", // 3D Render
+  //   afterImg: "/images/648889942_1523994966400265_8096599965218287035_n.jpg", // Executed site
+  //   beforeLabelAr: "التصميم ثلاثي الأبعاد 3D",
+  //   beforeLabelEn: "3D Render Design",
+  //   afterLabelAr: "التسليم الفعلي على أرض الواقع",
+  //   afterLabelEn: "Final Executed Site",
+  //   descAr: "مطابقة تامة بنسبة 100% بين التصميم الهندسي المقترح والتركيب الفعلي بالموقع مع رخام كوارتز وإضاءة مخفية.",
+  //   descEn: "100% precision match between the proposed 3D CAD render and the final execution at the client's home."
+  // },
+  // {
+  //   id: "showcase-2",
+  //   titleAr: "مطبخ مودرن عصري (نموذج 1)",
+  //   titleEn: "Modern Design (Model 1)",
+  //   beforeImg: "/images/619683564_1488417939957968_8517148991043508014_n.jpg", // 3D
+  //   afterImg: "/images/622381245_1488418043291291_1345312205051082767_n.jpg", // Reality
+  //   beforeLabelAr: "المخطط المقترح ثلاثي الأبعاد",
+  //   beforeLabelEn: "Proposed 3D Layout",
+  //   afterLabelAr: "موقع التسليم والتركيب",
+  //   afterLabelEn: "Executed Installation",
+  //   descAr: "توزيع مثالي لوحدات التخزين ومكان البلت-إن مع توزيع ذكي لمسار الإضاءة.",
+  //   descEn: "Perfect coordination of storage cabinets, built-in appliances and custom LED placement."
+  // },
   {
     id: "showcase-3",
     titleAr: "مقارنة التأسيس والتسليم",
     titleEn: "Site Prep vs Finished",
-    beforeImg: "/images/627859366_1494778672655228_3301318912919462723_n.jpg", // Prep
-    afterImg: "/images/627781586_1494778699321892_3431980651333181156_n.jpg", // Completed
+    beforeImg:  "/images/627781586_1494778699321892_3431980651333181156_n.jpg", // Prep
+    afterImg: "/images/627859366_1494778672655228_3301318912919462723_n.jpg", // Completed
     beforeLabelAr: "قبل التركيب (موقع العمل)",
     beforeLabelEn: "Before (On-site Work)",
     afterLabelAr: "بعد التركيب والتشطيب النهائي",

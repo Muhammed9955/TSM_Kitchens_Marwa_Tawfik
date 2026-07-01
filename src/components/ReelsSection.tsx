@@ -28,8 +28,9 @@ const Instagram = (props: React.SVGProps<SVGSVGElement> & { size?: number }) => 
 };
 
 interface ReelItem {
-  id: string; // Instagram Reel ID
+  id: string;
   thumbnail: string;
+  videoUrl: string;
   titleAr: string;
   titleEn: string;
   views: string;
@@ -39,8 +40,9 @@ interface ReelItem {
 
 const reelsData: ReelItem[] = [
   {
-    id: "C_5f6q-vNzS", // Mock Instagram Reel ID
+    id: "C_5f6q-vNzS",
     thumbnail: "/images/656875593_1542746357858459_4466184516215847562_n.jpg",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-kitchen-interior-design-with-wooden-accents-40995-large.mp4",
     titleAr: "جولة كاملة في مطبخ بولي لاك فخم ومقاوم للمياه",
     titleEn: "Bespoke Poly-lac Luxury Kitchen Video Tour",
     views: "18.5K",
@@ -50,6 +52,7 @@ const reelsData: ReelItem[] = [
   {
     id: "C_3u7m-bLmO",
     thumbnail: "/images/627781586_1494778699321892_3431980651333181156_n.jpg",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-modern-kitchen-interior-design-41005-large.mp4",
     titleAr: "تفاصيل مطبخ خشب طبيعي أرو كلاسيك عريق",
     titleEn: "Classic Natural Oak Kitchen Craftsmanship",
     views: "24.1K",
@@ -59,6 +62,7 @@ const reelsData: ReelItem[] = [
   {
     id: "C_1t8x-dRsF",
     thumbnail: "/images/689215323_1577073144425780_5648049577088391907_n.jpg",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-cozy-kitchen-interior-41010-large.mp4",
     titleAr: "شاهد استغلال المساحة في دريسنج روم متكامل",
     titleEn: "Smart Spaces inside a Bespoke Dressing Closet",
     views: "15.3K",
@@ -185,7 +189,7 @@ export default function ReelsSection() {
 
         {/* Video Player Modal Backdrop */}
         {activeReel && (
-          <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
             
             {/* Modal Box */}
             <div className="relative w-full max-w-sm aspect-[9/16] bg-zinc-950 rounded-3xl border border-zinc-800 shadow-2xl flex flex-col justify-between overflow-hidden animate-scale-up">
@@ -206,37 +210,16 @@ export default function ReelsSection() {
                 </button>
               </div>
 
-              {/* Embedded Player Frame */}
+              {/* Native HTML5 Video Player */}
               <div className="relative flex-grow w-full h-full pt-14 pb-16">
-                <iframe
-                  src={`https://www.instagram.com/reel/${activeReel.id}/embed/`}
-                  className="w-full h-full border-0 rounded-b-xl"
-                  scrolling="no"
-                  allowFullScreen
-                  title="Instagram Reel Player"
+                <video
+                  src={activeReel.videoUrl}
+                  className="w-full h-full object-cover"
+                  controls
+                  autoPlay
+                  loop
+                  playsInline
                 />
-
-                {/* Cover Loader Fallback (Underlay while iframe loads or if blocked) */}
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-8 bg-zinc-950 text-center gap-4 pt-20 pointer-events-none select-none">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden border border-zinc-800 p-0.5">
-                    <Image
-                      src={activeReel.thumbnail}
-                      alt="Thumbnail placeholder"
-                      fill
-                      className="object-cover rounded-full"
-                    />
-                  </div>
-                  <div className="z-10">
-                    <h4 className="text-white text-sm font-bold mb-2">
-                      {lang === "ar" ? activeReel.titleAr : activeReel.titleEn}
-                    </h4>
-                    <p className="text-zinc-500 text-xs leading-relaxed">
-                      {lang === "ar"
-                        ? "يتم تحميل الفيديو من إنستغرام. إذا لم يعمل بسبب إعدادات الخصوصية، اضغط أدناه."
-                        : "Loading Reel player from Instagram. If it doesn't load, use the external link."}
-                    </p>
-                  </div>
-                </div>
               </div>
 
               {/* Footer CTA Banner */}
