@@ -1,92 +1,42 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { MapPin, Calendar, CheckSquare, PhoneCall, Quote } from "lucide-react";
+import { MapPin, Calendar, CheckSquare, PhoneCall, Quote, Grid, Eye, Plus } from "lucide-react";
 import { useLanguage } from "@/locales/LanguageContext";
-
-interface ProjectItem {
-  id: number;
-  titleAr: string;
-  titleEn: string;
-  descAr: string;
-  descEn: string;
-  image: string;
-  locationAr: string;
-  locationEn: string;
-  year: string;
-  materialsAr: string;
-  materialsEn: string;
-  tagAr: string;
-  tagEn: string;
-  quoteAr: string;
-  quoteEn: string;
-  clientAr: string;
-  clientEn: string;
-}
-
-const projectsData: ProjectItem[] = [
-  {
-    id: 1,
-    titleAr: "مطبخ أكريليك عصري - سموحة",
-    titleEn: "Modern Acrylic Kitchen - Smouha",
-    descAr: "مساحة واسعة بنظام الإضاءة الذكية ومزيج من خامات الأكريليك الفاخر والبولي لاك المقاوم للرطوبة مع جزيرة مطبخ وسطية رخام.",
-    descEn: "Spacious contemporary layout featuring smart LED profiles, high-gloss Acrylic cabinetry, and moisture-resistant Poly-lac with a marble island.",
-    image: "/images/619683564_1488417939957968_8517148991043508014_n.jpg",
-    locationAr: "سموحة، الإسكندرية",
-    locationEn: "Smouha, Alexandria",
-    year: "2026",
-    materialsAr: "أكريليك تركي، بولي لاك، كوارتز، إكسسوارات بلوم نمساوية",
-    materialsEn: "Turkish Acrylic, Poly-lac, Quartz countertop, Austrian Blum fittings",
-    tagAr: "تصميم عصري متكامل",
-    tagEn: "Complete Modern Design",
-    quoteAr: "التزام رائع بمواعيد التركيب ودقة متناهية في التفاصيل الهندسية للمطبخ.",
-    quoteEn: "Exceptional commitment to delivery timelines and immaculate precision in execution.",
-    clientAr: "أ. كريم رفعت",
-    clientEn: "Karim R."
-  },
-  {
-    id: 2,
-    titleAr: "مطبخ كلاسيك خشب - كفر عبده",
-    titleEn: "Luxury Natural Wood Kitchen - Kafr Abdo",
-    descAr: "مطبخ دافئ وعريق مصنوع بالكامل من خشب الأرو الطبيعي المعالج ضد المياه، مع مقابض نحاسية عتيقة ومساحة تخزين مصممة خصيصاً.",
-    descEn: "Warm classical design crafted entirely of premium water-treated natural oak wood, featuring vintage brass hardware and custom storage units.",
-    image: "/images/627781586_1494778699321892_3431980651333181156_n.jpg",
-    locationAr: "كفر عبده، الإسكندرية",
-    locationEn: "Kafr Abdo, Alexandria",
-    year: "2025",
-    materialsAr: "خشب أرو طبيعي، إكسسوارات هيدروليك إيطالية، جرانيت مستورد",
-    materialsEn: "Natural Oak Wood, Italian soft-close hardware, imported Granite tops",
-    tagAr: "خشب طبيعي كلاسيك",
-    tagEn: "Classic Oak Wood",
-    quoteAr: "جودة خامات الخشب والتشطيب فاقت كل توقعاتي، المهندسة مروة وفريق العمل قمة في الاحترافية.",
-    quoteEn: "The wood selection and finishing quality exceeded all my expectations. Highly recommended.",
-    clientAr: "د. سارة فهمي",
-    clientEn: "Dr. Sarah F."
-  },
-  {
-    id: 3,
-    titleAr: "دريسنج روم متكامل - سان ستيفانو",
-    titleEn: "Bespoke Dressing Room - San Stefano",
-    descAr: "استغلال ذكي للغاية للمساحات المتاحة مع تقسيمات داخلية مريحة لتنظيم الملابس، أرفف زجاجية مضيئة، ودرف ألومنيوم سوداء زجاج.",
-    descEn: "Highly optimized walk-in closet space featuring customized drawer grids, integrated LED profiles, and premium black aluminum glass doors.",
-    image: "/images/689215323_1577073144425780_5648049577088391907_n.jpg",
-    locationAr: "سان ستيفانو، الإسكندرية",
-    locationEn: "San Stefano, Alexandria",
-    year: "2026",
-    materialsAr: "ألواح خشبية معالجة، درف زجاج سيكوريت، إضاءة ليد بروفايل",
-    materialsEn: "Moisture-treated panels, tempered glass doors, profile LED setup",
-    tagAr: "تصميم وحلول ذكية",
-    tagEn: "Smart Storage Solutions",
-    quoteAr: "استغلال عبقري للمساحة وتصميم الدريسنج روم مريح جداً وعملي مع إضاءة داخلية تحفة.",
-    quoteEn: "Brilliant space optimization. The walk-in closet is extremely functional and visually stunning.",
-    clientAr: "م. رانيا علي",
-    clientEn: "Rania A."
-  }
-];
+import { projectsData, ProjectItem } from "@/data/projectsData";
+import { trackGAEvent, trackPixelEvent } from "@/utils/analytics";
 
 export default function Projects() {
-  const { lang } = useLanguage();
+  const { lang, dict } = useLanguage();
   const basePath = lang === "ar" ? "" : "/en";
+
+  const [activeCategory, setActiveCategory] = useState<"all" | "modern" | "classic" | "dressing">("all");
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  // Reset pagination on category change
+  useEffect(() => {
+    setVisibleCount(6);
+  }, [activeCategory]);
+
+  const handleCategoryChange = (category: "all" | "modern" | "classic" | "dressing") => {
+    setActiveCategory(category);
+    trackGAEvent("projects_category_filter", "engagement", category);
+    trackPixelEvent("Search", { search_string: category, content_category: "Projects" });
+  };
+
+  const handleLoadMore = () => {
+    const nextCount = visibleCount + 6;
+    setVisibleCount(nextCount);
+    trackGAEvent("projects_load_more", "engagement", `Show ${nextCount} items`);
+  };
+
+  const filteredProjects = projectsData.filter((project) => {
+    if (activeCategory === "all") return true;
+    return project.category === activeCategory;
+  });
+
+  const visibleProjects = filteredProjects.slice(0, visibleCount);
 
   return (
     <section id="projects" className="py-20 sm:py-28 bg-white relative overflow-hidden">
@@ -97,7 +47,7 @@ export default function Projects() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Page Banner Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20 sm:mb-28">
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <span className="text-pink-500 font-semibold tracking-wider text-xs sm:text-sm uppercase mb-2 block">
             {lang === "ar" ? "أعمال المهندسة مروة توفيق" : "Portfolio of Eng. Marwa Tawfik"}
           </span>
@@ -113,9 +63,31 @@ export default function Projects() {
           <div className="w-16 h-1 bg-pink-600 mx-auto rounded-full mt-6" />
         </div>
 
+        {/* Filter Navigation Tabs */}
+        <div className="flex flex-wrap justify-center items-center gap-2 mb-16 border-b border-slate-100 pb-8 max-w-2xl mx-auto">
+          {[
+            { id: "all", labelAr: "كافة المشاريع", labelEn: "All Projects" },
+            { id: "modern", labelAr: "مطابخ مودرن", labelEn: "Modern Kitchens" },
+            { id: "classic", labelAr: "مطابخ كلاسيك خشب", labelEn: "Classic Wood Kitchens" },
+            { id: "dressing", labelAr: "دريسنج روم وغرف ملابس", labelEn: "Dressing & Wardrobes" },
+          ].map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => handleCategoryChange(cat.id as any)}
+              className={`px-4 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
+                activeCategory === cat.id
+                  ? "bg-slate-900 border border-slate-900 text-white shadow-md scale-105"
+                  : "bg-slate-50 border border-slate-200 text-slate-600 hover:bg-pink-600 hover:border-pink-600 hover:text-white"
+              }`}
+            >
+              {lang === "ar" ? cat.labelAr : cat.labelEn}
+            </button>
+          ))}
+        </div>
+
         {/* Alternating Narrative Project Rows */}
         <div className="space-y-24 sm:space-y-36">
-          {projectsData.map((project, index) => {
+          {visibleProjects.map((project, index) => {
             const isEven = index % 2 === 0;
 
             return (
@@ -133,7 +105,7 @@ export default function Projects() {
                       fill
                       sizes="(max-w-1024px) 100vw, 50vw"
                       className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-                      priority={index === 0}
+                      priority={index < 2}
                     />
                     
                     {/* Floating Date Tag */}
@@ -188,10 +160,14 @@ export default function Projects() {
                     </p>
                   </div>
 
-                  {/* Request similar design button (fixed to point to absolute home contact anchor) */}
+                  {/* Request similar design button */}
                   <div>
                     <a
                       href={`${basePath}/#contact`}
+                      onClick={() => {
+                        trackGAEvent("request_similar_project_click", "lead", project.titleEn);
+                        trackPixelEvent("InitiateCheckout", { content_name: project.titleEn });
+                      }}
                       className="inline-flex items-center justify-center gap-2 bg-pink-600 hover:bg-pink-700 text-white font-bold px-7 py-3.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer text-sm"
                     >
                       <PhoneCall size={14} />
@@ -204,7 +180,26 @@ export default function Projects() {
           })}
         </div>
 
+        {/* Load More Pagination */}
+        {visibleCount < filteredProjects.length && (
+          <div className="text-center mt-20 border-t border-slate-100 pt-12">
+            <button
+              onClick={handleLoadMore}
+              className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-pink-600 text-white hover:text-white font-bold px-8 py-4 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer text-sm sm:text-base"
+            >
+              <Plus size={18} />
+              <span>{lang === "ar" ? "عرض المزيد من المشاريع" : "Load More Projects"}</span>
+            </button>
+            <span className="block text-xs text-slate-400 mt-3 font-semibold">
+              {lang === "ar"
+                ? `عرض ${visibleProjects.length} من أصل ${filteredProjects.length} مشروع`
+                : `Showing ${visibleProjects.length} of ${filteredProjects.length} projects`}
+            </span>
+          </div>
+        )}
+
       </div>
     </section>
   );
 }
+

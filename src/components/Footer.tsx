@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Phone } from "lucide-react";
 import { useLanguage } from "@/locales/LanguageContext";
+import { trackGAEvent, trackPixelEvent } from "@/utils/analytics";
 
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -43,6 +44,7 @@ export default function Footer() {
     { href: "#about", label: dict.nav.about },
     { href: "#services", label: dict.nav.services },
     { href: "#gallery", label: dict.nav.gallery },
+    { href: "#quotation", label: lang === "ar" ? "طلب عرض سعر" : "Get Quote" },
     { href: "#contact", label: dict.nav.contact },
   ];
 
@@ -109,6 +111,10 @@ export default function Footer() {
                 href="https://wa.me/201113561777"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => {
+                  trackGAEvent("social_click", "engagement", "whatsapp_footer");
+                  trackPixelEvent("Contact", { method: "whatsapp_footer" });
+                }}
                 className="flex items-center gap-2 text-zinc-400 hover:text-pink-500 transition-colors text-xs sm:text-sm"
               >
                 <Phone size={14} className="text-pink-500" />

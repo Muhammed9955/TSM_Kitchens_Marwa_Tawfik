@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Send } from "lucide-react";
 import { useLanguage } from "@/locales/LanguageContext";
+import { trackGAEvent, trackPixelEvent } from "@/utils/analytics";
 
 export default function ContactForm() {
   const { lang, dict } = useLanguage();
@@ -44,6 +45,10 @@ export default function ContactForm() {
     // Open WhatsApp URL in a new window/tab
     const url = `https://wa.me/201113561777?text=${encodeURIComponent(formattedMessage)}`;
     window.open(url, "_blank");
+
+    // Track Lead conversion
+    trackGAEvent("form_submit", "lead", "contact_inspection");
+    trackPixelEvent("Lead", { content_name: "Inspection Booking", content_category: formData.service });
 
     setStatus("success");
     setFormData({
