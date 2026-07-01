@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, PhoneCall } from "lucide-react";
-import { dictionaries, Locale } from "@/locales/dictionaries";
+import { usePathname } from "next/navigation";
+import { useLanguage } from "@/locales/LanguageContext";
 
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -36,14 +37,11 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-interface NavbarProps {
-  lang: Locale;
-}
-
-export default function Navbar({ lang }: NavbarProps) {
+export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const dict = dictionaries[lang];
+  const { lang, dict } = useLanguage();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,7 +66,17 @@ export default function Navbar({ lang }: NavbarProps) {
   ];
 
   const otherLang = lang === "ar" ? "en" : "ar";
-  const langTogglePath = lang === "ar" ? "/en" : "/";
+  
+  const getTogglePath = () => {
+    if (lang === "ar") {
+      if (pathname === "/") return "/en";
+      return `/en${pathname}`;
+    } else {
+      const arPath = pathname.replace(/^\/en/, "");
+      return arPath || "/";
+    }
+  };
+  const langTogglePath = getTogglePath();
 
   // WhatsApp click action
   const handleWhatsApp = () => {

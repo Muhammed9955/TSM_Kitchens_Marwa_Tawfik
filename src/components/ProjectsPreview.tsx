@@ -3,11 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, ArrowRight, ArrowLeft } from "lucide-react";
-import { Locale } from "@/locales/dictionaries";
-
-interface ProjectsPreviewProps {
-  lang: Locale;
-}
+import { useLanguage } from "@/locales/LanguageContext";
 
 interface ProjectPreviewItem {
   id: number;
@@ -53,7 +49,8 @@ const projectsPreviewData: ProjectPreviewItem[] = [
   }
 ];
 
-export default function ProjectsPreview({ lang }: ProjectsPreviewProps) {
+export default function ProjectsPreview() {
+  const { lang } = useLanguage();
   const targetLink = lang === "ar" ? "/projects" : "/en/projects";
 
   return (

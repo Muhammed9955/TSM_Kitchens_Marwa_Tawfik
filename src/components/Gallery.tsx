@@ -3,17 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, Maximize2, Plus } from "lucide-react";
-import { dictionaries, Locale } from "@/locales/dictionaries";
+import { useLanguage } from "@/locales/LanguageContext";
 import { galleryItems } from "../data/galleryData";
 
-interface GalleryProps {
-  lang: Locale;
-}
-
-export default function Gallery({ lang }: GalleryProps) {
+export default function Gallery() {
   const [visibleCount, setVisibleCount] = useState(12);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const dict = dictionaries[lang];
+  const { lang, dict } = useLanguage();
 
   const totalItems = galleryItems.length;
   const visibleItems = galleryItems.slice(0, visibleCount);

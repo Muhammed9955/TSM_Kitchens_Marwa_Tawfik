@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Phone } from "lucide-react";
-import { dictionaries, Locale } from "@/locales/dictionaries";
+import { useLanguage } from "@/locales/LanguageContext";
 
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -35,12 +35,8 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-interface FooterProps {
-  lang: Locale;
-}
-
-export default function Footer({ lang }: FooterProps) {
-  const dict = dictionaries[lang];
+export default function Footer() {
+  const { lang, dict } = useLanguage();
 
   const quickLinks = [
     { href: "#home", label: dict.nav.home },

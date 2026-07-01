@@ -1,14 +1,10 @@
 "use client";
 
 import { Palette, Hammer, LayoutList, Wrench } from "lucide-react";
-import { dictionaries, Locale } from "@/locales/dictionaries";
+import { useLanguage } from "@/locales/LanguageContext";
 
-interface ServicesProps {
-  lang: Locale;
-}
-
-export default function Services({ lang }: ServicesProps) {
-  const dict = dictionaries[lang];
+export default function Services() {
+  const { lang, dict } = useLanguage();
 
   // Dynamic lucide-react icons list for services
   const icons = [

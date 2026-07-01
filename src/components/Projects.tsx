@@ -2,11 +2,7 @@
 
 import Image from "next/image";
 import { MapPin, Calendar, CheckSquare, PhoneCall, Quote } from "lucide-react";
-import { Locale } from "@/locales/dictionaries";
-
-interface ProjectsProps {
-  lang: Locale;
-}
+import { useLanguage } from "@/locales/LanguageContext";
 
 interface ProjectItem {
   id: number;
@@ -88,7 +84,8 @@ const projectsData: ProjectItem[] = [
   }
 ];
 
-export default function Projects({ lang }: ProjectsProps) {
+export default function Projects() {
+  const { lang } = useLanguage();
   const basePath = lang === "ar" ? "" : "/en";
 
   return (

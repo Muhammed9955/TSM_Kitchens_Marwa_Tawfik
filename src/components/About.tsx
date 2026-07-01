@@ -2,14 +2,10 @@
 
 import Image from "next/image";
 import { LayoutGrid, Layers, Settings, ShieldCheck } from "lucide-react";
-import { dictionaries, Locale } from "@/locales/dictionaries";
+import { useLanguage } from "@/locales/LanguageContext";
 
-interface AboutProps {
-  lang: Locale;
-}
-
-export default function About({ lang }: AboutProps) {
-  const dict = dictionaries[lang];
+export default function About() {
+  const { lang, dict } = useLanguage();
   
   // Map icons dynamically
   const featureIcons = [

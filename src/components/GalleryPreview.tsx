@@ -4,11 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
-import { dictionaries, Locale } from "@/locales/dictionaries";
-
-interface GalleryPreviewProps {
-  lang: Locale;
-}
+import { useLanguage } from "@/locales/LanguageContext";
 
 // 10 Featured kitchen design images for the home page carousel
 const featuredFiles = [
@@ -24,11 +20,11 @@ const featuredFiles = [
   "627792934_1494778709321891_1945409576520292824_n.jpg",
 ];
 
-export default function GalleryPreview({ lang }: GalleryPreviewProps) {
+export default function GalleryPreview() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [slidesToShow, setSlidesToShow] = useState(3);
-  const dict = dictionaries[lang];
+  const { lang, dict } = useLanguage();
 
   // Update slidesToShow based on viewport width
   useEffect(() => {

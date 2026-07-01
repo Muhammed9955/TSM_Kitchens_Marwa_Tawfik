@@ -3,11 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { dictionaries, Locale } from "@/locales/dictionaries";
-
-interface HeroSliderProps {
-  lang: Locale;
-}
+import { useLanguage } from "@/locales/LanguageContext";
 
 // 4 Premium full-view kitchen layout images (wide-angle designs)
 const slideImages = [
@@ -17,9 +13,9 @@ const slideImages = [
   "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=2070",
 ];
 
-export default function HeroSlider({ lang }: HeroSliderProps) {
+export default function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const dict = dictionaries[lang];
+  const { lang, dict } = useLanguage();
   const slides = dict.hero.slides;
 
   const nextSlide = useCallback(() => {
@@ -31,7 +27,7 @@ export default function HeroSlider({ lang }: HeroSliderProps) {
   };
 
   useEffect(() => {
-    const timer = setInterval(nextSlide, 6000);
+    const timer = setInterval(nextSlide, 4000);
     return () => clearInterval(timer);
   }, [nextSlide]);
 
@@ -62,7 +58,7 @@ export default function HeroSlider({ lang }: HeroSliderProps) {
 
             {/* Content Container */}
             <div
-              className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center h-full"
+              className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center"
               dir={lang === "ar" ? "rtl" : "ltr"}
             >
               <div
@@ -73,32 +69,32 @@ export default function HeroSlider({ lang }: HeroSliderProps) {
                 } ${lang === "ar" ? "text-right" : "text-left"}`}
               >
                 {/* Tagline */}
-                <span className="inline-block text-pink-500 font-semibold tracking-wider text-xs sm:text-sm uppercase mb-3 px-3 py-1 rounded-full border border-pink-500/30 bg-pink-500/10">
+                <span className="inline-block text-pink-500 font-semibold tracking-wider text-[10px] sm:text-xs md:text-sm uppercase mb-2 sm:mb-3 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-pink-500/30 bg-pink-500/10">
                   {lang === "ar" ? "قيمة حقيقية لمنزلك" : "Real Value For Your Home"}
                 </span>
 
                 {/* Title */}
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight mb-4 drop-shadow-md">
+                <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-3 sm:mb-4 drop-shadow-md">
                   {slide.title}
                 </h1>
 
                 {/* Description */}
-                <p className="text-base sm:text-lg md:text-xl text-zinc-200 mb-8 max-w-xl leading-relaxed">
+                <p className="text-xs sm:text-base md:text-lg text-zinc-200 mb-6 sm:mb-8 max-w-xl leading-relaxed">
                   {slide.description}
                 </p>
 
                 {/* Buttons wrapper */}
-                <div className="flex flex-wrap items-center gap-4 justify-start">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4 justify-start">
                   <a
                     href="#gallery"
-                    className="inline-flex items-center justify-center bg-pink-600 hover:bg-pink-700 text-white font-bold px-7 py-3.5 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] cursor-pointer text-sm sm:text-base"
+                    className="inline-flex items-center justify-center bg-pink-600 hover:bg-pink-700 text-white font-bold px-5 py-2.5 sm:px-7 sm:py-3.5 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] cursor-pointer text-xs sm:text-sm md:text-base"
                   >
                     {slide.cta}
                   </a>
                   
                   <a
                     href="#contact"
-                    className="inline-flex items-center justify-center border border-white hover:bg-white hover:text-slate-900 text-white font-bold px-7 py-3.5 rounded-full transition-all duration-300 hover:scale-105 backdrop-blur-xs cursor-pointer text-sm sm:text-base"
+                    className="inline-flex items-center justify-center border border-white hover:bg-white hover:text-slate-900 text-white font-bold px-5 py-2.5 sm:px-7 sm:py-3.5 rounded-full transition-all duration-300 hover:scale-105 backdrop-blur-xs cursor-pointer text-xs sm:text-sm md:text-base"
                   >
                     {lang === "ar" ? "احجز موعد معاينة" : "Book Inspection"}
                   </a>
@@ -112,7 +108,7 @@ export default function HeroSlider({ lang }: HeroSliderProps) {
       {/* Navigation Arrows */}
       <button
         onClick={lang === "ar" ? nextSlide : prevSlide}
-        className={`absolute top-1/2 -translate-y-1/2 z-20 bg-black/35 hover:bg-pink-600 text-white border border-zinc-700/30 p-2.5 rounded-full backdrop-blur-md transition-all cursor-pointer left-4 sm:left-8`}
+        className="absolute top-1/2 -translate-y-1/2 z-20 bg-black/35 hover:bg-pink-600 text-white border border-zinc-700/30 p-2.5 rounded-full backdrop-blur-md transition-all cursor-pointer left-4 sm:left-8 hidden sm:inline-flex"
         aria-label="Previous Slide"
       >
         <ChevronLeft size={24} />
@@ -120,14 +116,14 @@ export default function HeroSlider({ lang }: HeroSliderProps) {
 
       <button
         onClick={lang === "ar" ? prevSlide : nextSlide}
-        className={`absolute top-1/2 -translate-y-1/2 z-20 bg-black/35 hover:bg-pink-600 text-white border border-zinc-700/30 p-2.5 rounded-full backdrop-blur-md transition-all cursor-pointer right-4 sm:right-8`}
+        className="absolute top-1/2 -translate-y-1/2 z-20 bg-black/35 hover:bg-pink-600 text-white border border-zinc-700/30 p-2.5 rounded-full backdrop-blur-md transition-all cursor-pointer right-4 sm:right-8 hidden sm:inline-flex"
         aria-label="Next Slide"
       >
         <ChevronRight size={24} />
       </button>
 
       {/* Indicators Dots */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex gap-2.5">
+      <div className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 z-20 flex gap-2.5">
         {slides.map((_, index) => (
           <button
             key={index}

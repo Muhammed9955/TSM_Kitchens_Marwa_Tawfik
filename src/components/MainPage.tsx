@@ -8,20 +8,20 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import FloatingSocials from "@/components/FloatingSocials";
 
-export default function EnglishHome() {
+export default function MainPage() {
   return (
     <>
-      <Navbar lang="en" />
+      <Navbar />
       <main className="flex-grow pt-20">
-        <HeroSlider lang="en" />
-        <About lang="en" />
-        <Services lang="en" />
-        <ProjectsPreview lang="en" />
-        <GalleryPreview lang="en" />
-        <Contact lang="en" />
+        <HeroSlider />
+        <About />
+        <Services />
+        <ProjectsPreview />
+        <GalleryPreview />
+        <Contact />
       </main>
-      <Footer lang="en" />
-      <FloatingSocials lang="en" />
+      <Footer />
+      <FloatingSocials />
     </>
   );
 }
